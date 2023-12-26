@@ -18,11 +18,11 @@ class Base:
 
 def get_metadata():
     """Import all project tables"""
-    from db.tables.auth import AuthORM
-    from db.tables.player import PlayerORM
-    from db.tables.game import GameORM
-    from db.tables.field import FieldORM
-    from db.tables.boat import BoatORM
-    from db.tables.prize import PrizeORM
+    from app.db.tables.auth import AuthORM
+    from app.db.tables.player import PlayerORM
+    from app.db.tables.game import GameORM
+    from app.db.tables.field import FieldORM
+    from app.db.tables.boat import BoatORM
+    from app.db.tables.prize import PrizeORM
 
     return mapper_registry.metadata

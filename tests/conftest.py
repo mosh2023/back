@@ -7,7 +7,7 @@ import platform
 from asyncpg.exceptions import InvalidCatalogNameError
 from fastapi import FastAPI
 from httpx import AsyncClient
-from medsi_fastapi.app import MedsiFastApi
+# from medsi_fastapi.app import MedsiFastApi
 from sqlalchemy import MetaData
 from sqlalchemy.engine import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -46,7 +46,7 @@ def event_loop() -> AbstractEventLoop:
 
 @pytest.fixture(scope="session")
 def prepare_database(app_config: APPSettings):
-    url = "?".join(("_".join((app_config.DATABASE_URL, "test")), "async_fallback=true"))
+    url = "?".join((app_config.DATABASE_URL, "async_fallback=true"))
     engine = create_engine(url)
 
     try:
@@ -60,7 +60,7 @@ def prepare_database(app_config: APPSettings):
 @pytest.fixture(scope="session")
 async def engine(app_config: APPSettings, prepare_database) -> AsyncEngine:
     engine = create_async_engine(
-        "_".join((app_config.DATABASE_URL, "test")),
+        app_config.DATABASE_URL,
         echo=False,
         future=True,
         pool_pre_ping=True,
@@ -101,20 +101,20 @@ def get_session(db_session: AsyncSession):
     return _override_get_session
 
 
-@pytest.fixture
-def app(get_session: Callable) -> FastAPI:
-    from app.api.dependencies.database import _get_session
-    from app.main import app as fastapi_app
+# @pytest.fixture
+# def app(get_session: Callable) -> FastAPI:
+#     from app.api.dependencies.database import _get_session
+#     from app.main import app as fastapi_app
 
-    MedsiFastApi.post_init(fastapi_app)
-    fastapi_app.dependency_overrides[_get_session] = get_session
+#     MedsiFastApi.post_init(fastapi_app)
+#     fastapi_app.dependency_overrides[_get_session] = get_session
 
-    return fastapi_app
+#     return fastapi_app
 
 
-@pytest.fixture
-async def async_client(app: FastAPI, app_config: APPSettings) -> AsyncGenerator:
-    async with AsyncClient(
-        app=app, base_url=f"http://test{app_config.API_ROUTE}"
-    ) as async_client:
-        yield async_client
+# @pytest.fixture
+# async def async_client(app: FastAPI, app_config: APPSettings) -> AsyncGenerator:
+#     async with AsyncClient(
+#         app=app, base_url=f"http://test{app_config.API_ROUTE}"
+#     ) as async_client:
+#         yield async_client

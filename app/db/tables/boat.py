@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy import orm
 
-from db.tables.base import Base
+from app.db.tables.base import Base
 
 
 class BoatORM(Base):

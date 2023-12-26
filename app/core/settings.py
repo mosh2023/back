@@ -2,12 +2,12 @@ from functools import lru_cache
 from typing import List
 from typing import Optional
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 from starlette.config import Config
 from starlette.datastructures import CommaSeparatedStrings
 
 
-config = Config(".env")
+config = Config("env/.env.test")
 
 
 class APPSettings(BaseSettings):
@@ -22,6 +22,7 @@ class APPSettings(BaseSettings):
         cast=str,
         default="postgresql+asyncpg://postgres:DT0546/admin@127.0.0.1:5432/db_name",
     )
+    print('!' * 30, DATABASE_URL)
 
     API_ROUTE: str = config("API_ROUTE", cast=str, default="/path")
     API_ROOT_PATH: str = config("API_ROOT_PATH", default="")
