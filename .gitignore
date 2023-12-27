@@ -6,7 +6,7 @@ auth_service/venv
 **/__pycache__/**
 **/.hypothesis/**
 
-auth_service/.env.example
+.env
 .coverage
 /game_service/dockerfiles/
 /auth_service/dockerfiles/
