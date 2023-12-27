@@ -1,0 +1,8 @@
+.idea
+/dockerfiles/
+venv
+.pip
+.env.example
+.env.local_docker
+**/__pycache__/**
+.DS_Store
