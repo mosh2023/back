@@ -1,22 +1,20 @@
 import ormar
 from app.core.db import BaseMeta
-from uuid import UUID, uuid4
 from passlib.hash import bcrypt
 
 
 class User(ormar.Model):
     class Meta(BaseMeta):
-        pass
+        tablename = "auth"
 
-    id: UUID = ormar.UUID(primary_key=True, default=uuid4)
-    last_name: str = ormar.String(max_length=50, nullable=True)
-    name: str = ormar.String(max_length=50, nullable=True)
-    username: str = ormar.String(max_length=50, unique=True)
+    id: int = ormar.Integer(primary_key=True, autoincrement=True)
+    login: str = ormar.String(max_length=100, nullable=False, unique=True)
     password: str = ormar.String(max_length=128)
+    is_admin: bool = ormar.Boolean(default=False)
 
     @classmethod
-    async def get_user(cls, username):
-        return cls.get(username=username)
+    async def get_user(cls, login):
+        return cls.get(login=login)
 
     def verify_password(self, password):
         return bcrypt.verify(password, self.password)

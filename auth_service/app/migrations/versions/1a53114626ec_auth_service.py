@@ -20,11 +20,9 @@ def upgrade():
     op.execute("""
     CREATE TABLE auth (
         id SERIAL PRIMARY KEY NOT NULL,
-        player_id INT,
-        login VARCHAR(100) UNIQUE NOT NULL,
-        password VARCHAR(50) NOT NULL,
-        is_admin BOOLEAN NOT NULL,
-        datetime TIMESTAMP
+        login VARCHAR(50) UNIQUE NOT NULL,
+        password VARCHAR(128) NOT NULL,
+        is_admin BOOLEAN NOT NULL
     );
     """)
 

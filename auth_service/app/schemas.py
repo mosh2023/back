@@ -12,32 +12,31 @@ class BaseSchema(BaseModel):
 
 
 class UserAllInfo(BaseSchema):
-    last_name: str
-    name: str
-    username: str
+    login: str
     password: str
+    is_admin: bool
 
 
 class UserAuth(BaseSchema):
-    username: str
+    login: str
     password: str
 
 
 class UserGet(BaseSchema):
     id: str
-    username: str
+    login: str
     password: str
+    is_admin: bool
 
 
 class UserEdit(BaseSchema):
-    last_name: Optional[str]
-    name: Optional[str]
-    username: Optional[str]
+    login: Optional[str]
     password: Optional[str]
+    is_admin: Optional[bool]
 
 
 class CheckEmail(BaseSchema):
-    username: str
+    login: str
 
 
 class CheckAnswer(BaseSchema):

@@ -16,16 +16,17 @@ router = APIRouter(
 
 @router.post('/')
 async def auth(data: UserAuth):
-    user = await authenticate_user(data.username, data.password)
+    user = await authenticate_user(data.login, data.password)
     if not user:
-        return {'error' : 'invaid credentials'}
+        return {'error': 'invalid credentials'}
     user = UserGet(
-        id=str(user.id),
-        username=user.username,
-        password=user.password
+        id=user.id,
+        login=user.login,
+        password=user.password,
+        is_admin=user.is_admin
     )
     token = jwt.encode(user.dict(), settings.secret_key)
-    return {'access_token' : token, 'token_type' : 'bearer'}
+    return {'access_token': token, 'token_type': 'bearer'}
 
 
 @router.post('/reg')
@@ -40,9 +41,9 @@ async def register(user: UserAllInfo):
 
 
 @router.post('/check_username')
-async def check_username(username: CheckEmail):
+async def check_username(login: CheckEmail):
     try:
-        await User.objects.get(username=username.username)
+        await User.objects.get(login=login.login)
         return CheckAnswer(answer=False)
     except ormar.exceptions.NoMatch:
         return CheckAnswer(answer=True)

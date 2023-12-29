@@ -2,16 +2,7 @@ from app.routes import router
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-import app.routes
 from app.core.db import database
-
-# DB_URL = "postgresql://meta_db_user:meta_db_password@localhost:5432/db"
-
-
-# database = databases.Database(DB_URL)
-
-
-app = FastAPI()
 
 app = FastAPI()
 
@@ -30,9 +21,10 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup() -> None:
-    database_= app.state.database
+    database_ = app.state.database
     if not database_.is_connected:
         await database.connect()
+
 
 @app.on_event("shutdown")
 async def shutdown() -> None:
