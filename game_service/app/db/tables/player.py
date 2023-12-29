@@ -1,14 +1,14 @@
 import sqlalchemy as sa
 from sqlalchemy import orm
 
-from app.db.tables.base import Base
+from app.db.tables.base import DBBase
 
 
-class PlayerORM(Base):
+class PlayerORM(DBBase):
     __tablename__ = 'player'
 
     id = sa.Column('id', sa.Integer, primary_key=True, autoincrement=True)
-    auth_id = sa.Column('auth_id', sa.Integer, nullable=False)
+    auth_id = sa.Column('auth_id', sa.Integer, nullable=False, unique=True)
     name = sa.Column('name', sa.VARCHAR(50), nullable=False)
     icon_link = sa.Column('icon_link', sa.Text)
 
@@ -20,4 +20,4 @@ class PlayerORM(Base):
     prize_player = orm.relationship('PrizeORM', back_populates='player', foreign_keys='PrizeORM.player_id')
 
     def __repr__(self) -> str:
-        return f'''PlayerORM(id={self.id}, auth_id={self.auth_id}, name={self.name}, icon_link=...)'''
+        return f'PlayerORM(id={self.id}, auth_id={self.auth_id}, name={self.name}, icon_link=...)'

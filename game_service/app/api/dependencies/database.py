@@ -7,7 +7,7 @@ from typing import Type
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.repositories.base import BaseRepository
+from app.db.entities import BaseEntity
 from app.db.setup import async_session
 
 
@@ -18,11 +18,11 @@ async def _get_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 def get_repository(
-    repo_type: Type[BaseRepository],
-) -> Callable[[AsyncSession], Coroutine[Any, Any, BaseRepository]]:
+    repo_type: Type[BaseEntity],
+) -> Callable[[AsyncSession], Coroutine[Any, Any, BaseEntity]]:
     async def _get_repo(
         session: AsyncSession = Depends(_get_session),
-    ) -> BaseRepository:
+    ) -> BaseEntity:
         return repo_type(session)
 
     return _get_repo

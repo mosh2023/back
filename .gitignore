@@ -2,6 +2,7 @@
 .idea/
 game_service/venv/
 auth_service/venv
+
 **/.pytest_cache/**
 **/__pycache__/**
 **/.hypothesis/**

@@ -1,10 +1,10 @@
 import sqlalchemy as sa
 from sqlalchemy import orm
 
-from app.db.tables.base import Base
+from app.db.tables.base import DBBase
 
 
-class GameORM(Base):
+class GameORM(DBBase):
     __tablename__ = 'game'
 
     id = sa.Column('id', sa.Integer, primary_key=True, autoincrement=True)
@@ -31,7 +31,7 @@ class GameORM(Base):
     admin = orm.relationship('PlayerORM', back_populates='game_admin', foreign_keys=[admin_id])
 
     def __repr__(self) -> str:
-        return f'''GameORM(id={self.id}, name={self.name}, description=..., board_size={self.board_size}, key=***, \
-player1_id={self.player1_id}, player1_remaining_moves={self.player1_remaining_moves}, player1_used_moves={self.player1_used_moves}, \
-player2_id={self.player2_id}, player2_remaining_moves={self.player2_remaining_moves}, player2_used_moves={self.player2_used_moves}, \
-admin_id={self.admin_id}, datetime_start={self.datetime_start}, datetime_end={self.datetime_end}'''
+        return f'GameORM(id={self.id}, name={self.name}, description=..., board_size={self.board_size}, key=***, ' \
+            f'player1_id={self.player1_id}, player1_remaining_moves={self.player1_remaining_moves}, player1_used_moves={self.player1_used_moves}, ' \
+            f'player2_id={self.player2_id}, player2_remaining_moves={self.player2_remaining_moves}, player2_used_moves={self.player2_used_moves}, ' \
+            f'admin_id={self.admin_id}, datetime_start={self.datetime_start}, datetime_end={self.datetime_end}'

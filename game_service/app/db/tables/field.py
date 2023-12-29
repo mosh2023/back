@@ -1,10 +1,10 @@
 import sqlalchemy as sa
 from sqlalchemy import orm
 
-from app.db.tables.base import Base
+from app.db.tables.base import DBBase
 
 
-class FieldORM(Base):
+class FieldORM(DBBase):
     __tablename__ = 'field'
 
     id = sa.Column('id', sa.Integer, primary_key=True, autoincrement=True)
@@ -20,5 +20,5 @@ class FieldORM(Base):
     boat = orm.relationship('BoatORM', back_populates='field', foreign_keys=[boat_id])
 
     def __repr__(self) -> str:
-        return f'''FieldORM(id={self.id}, game_id={self.game_id}, x={self.x}, y={self.y}, \
-injured={self.injured}, player_id={self.player_id}, boat_id={self.boat_id})'''
+        return f'FieldORM(id={self.id}, game_id={self.game_id}, x={self.x}, y={self.y},' \
+            f'injured={self.injured}, player_id={self.player_id}, boat_id={self.boat_id})'

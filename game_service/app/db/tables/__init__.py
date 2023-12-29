@@ -1,5 +1,6 @@
-from app.db.tables.player import PlayerORM
-from app.db.tables.game import GameORM
-from app.db.tables.field import FieldORM
-from app.db.tables.boat import BoatORM
-from app.db.tables.prize import PrizeORM
+from .base import DBBase, get_metadata
+from .player import PlayerORM
+from .game import GameORM
+from .field import FieldORM
+from .boat import BoatORM
+from .prize import PrizeORM

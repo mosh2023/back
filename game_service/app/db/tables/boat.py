@@ -1,10 +1,10 @@
 import sqlalchemy as sa
 from sqlalchemy import orm
 
-from app.db.tables.base import Base
+from app.db.tables.base import DBBase
 
 
-class BoatORM(Base):
+class BoatORM(DBBase):
     __tablename__ = 'boat'
 
     id = sa.Column('id', sa.Integer, primary_key=True, autoincrement=True)
@@ -14,4 +14,4 @@ class BoatORM(Base):
     prize = orm.relationship('PrizeORM', back_populates='boat', foreign_keys=[prize_id])
 
     def __repr__(self) -> str:
-        return f'''BoatORM(id={self.id}, prize_id={self.prize_id})'''
+        return f'BoatORM(id={self.id}, prize_id={self.prize_id})'
