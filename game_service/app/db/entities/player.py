@@ -2,12 +2,13 @@ from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
 
-from .base import BaseEntity
+from . import BaseEntity
 from app.db.tables import PlayerORM
 from app.common.errors import ORMObjectExistsError
 
 
 class Player(BaseEntity):
+    ORM = PlayerORM
     def __init__(self, session: AsyncSession, id: int | None, 
             auth_id: int, name: str, icon_link: str = None):
         super().__init__(session)
@@ -22,7 +23,7 @@ class Player(BaseEntity):
         return PlayerORM(id=self.id, auth_id=self.auth_id, 
             name=self.name, icon_link=self.icon_link)
     
-    async def create(self):
+    async def create(self) -> None:
         player = self._get_orm()
         async with self.session() as session:
             async with session.begin():
@@ -48,11 +49,11 @@ class Player(BaseEntity):
         return Player._get_entity(se, player)
 
     # def get_games(self, admin: bool) -> list[Game]:
-    #     ...
+    #     '''Split this to multiple methods. Rely on `role` parameter.'''
 
     # def get_prizes(self) -> list[Prize]:
     #     ...
 
     def __repr__(self) -> str:
-        return f'Player(id={self.id}, auth_id={self.auth_id}, name={self.name}, icon_link=...)'
+        return f'Player(id={self.id}, auth_id={self.auth_id}, name="{self.name}", icon_link=...)'
 
