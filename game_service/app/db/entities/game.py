@@ -5,7 +5,6 @@ from datetime import datetime
 
 from . import BaseEntity
 from app.db.tables import GameORM
-from app.common.errors import ORMObjectExistsError
 
 
 class Game(BaseEntity):
@@ -40,13 +39,6 @@ class Game(BaseEntity):
             player2_id=self.player2_id, player2_remaining_moves=self.player2_remaining_moves, player2_used_moves=self.player2_used_moves,
             admin_id=self.admin_id, datetime_start=self.datetime_start, datetime_end=self.datetime_end
         )
-    
-    async def create(self) -> None:
-        game = self._get_orm()
-        async with self.session() as session:
-            async with session.begin():
-                session.add(game)
-        self.id = game.id
 
     @classmethod
     def _get_entity(cls, session: AsyncSession, orm: GameORM) -> Game:
@@ -57,24 +49,16 @@ class Game(BaseEntity):
 
     @classmethod
     async def get(cls, session: AsyncSession, id: int) -> Game:
-        se = session
-        async with session() as session:
-            game = await session.scalar(
-                sa.select(GameORM)
-                .where(GameORM.id == id)
-            )
+        return await super().get(session, id)
 
-            if not game:
-                raise ORMObjectExistsError(cls.__name__, id)
-
-        return Game._get_entity(se, game)
-    
     # Не бизнес ли логика?
     def whose_move(self):
         ...
 
+    def is_move_available(self, player_id, x, y) -> bool:
+        ...
+
     def move(self, player_id, x, y):
-        '''Тут enum какой-то нужен в return'''
         ...
 
     def add_moves(self, player_id, num) -> None:

@@ -4,7 +4,6 @@ import sqlalchemy as sa
 
 from . import BaseEntity
 from app.db.tables import PrizeORM
-from app.common.errors import ORMObjectExistsError
 from datetime import datetime as dt
 
 
@@ -28,13 +27,6 @@ class Prize(BaseEntity):
         return PrizeORM(id=self.id, name=self.name, description=self.description,
             icon_link=self.icon_link, player_id=self.player_id, admin_id=self.admin_id,
             datetime=self.datetime)
-    
-    async def create(self) -> None:
-        prize = self._get_orm()
-        async with self.session() as session:
-            async with session.begin():
-                session.add(prize)
-        self.id = prize.id
 
     @classmethod
     def _get_entity(cls, session: AsyncSession, orm: PrizeORM) -> Prize:
@@ -43,17 +35,11 @@ class Prize(BaseEntity):
 
     @classmethod
     async def get(cls, session: AsyncSession, id: int) -> Prize:
-        se = session
-        async with session() as session:
-            prize = await session.scalar(
-                sa.select(PrizeORM)
-                .where(PrizeORM.id == id)
-            )
-
-            if not prize:
-                raise ORMObjectExistsError(cls.__name__, id)
-
-        return Prize._get_entity(se, prize)
+        return await super().get(session, id)
+    
+    def set_winner(self):
+        # Привязать автоматом дату выигрыша.
+        ...
 
     def __repr__(self) -> str:
         return f'Field(id={self.id}, name="{self.name}", description=..., ' \

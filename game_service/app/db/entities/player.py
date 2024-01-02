@@ -4,7 +4,6 @@ import sqlalchemy as sa
 
 from . import BaseEntity
 from app.db.tables import PlayerORM
-from app.common.errors import ORMObjectExistsError
 
 
 class Player(BaseEntity):
@@ -22,13 +21,6 @@ class Player(BaseEntity):
     def _get_orm(self) -> PlayerORM:
         return PlayerORM(id=self.id, auth_id=self.auth_id, 
             name=self.name, icon_link=self.icon_link)
-    
-    async def create(self) -> None:
-        player = self._get_orm()
-        async with self.session() as session:
-            async with session.begin():
-                session.add(player)
-        self.id = player.id
 
     @classmethod
     def _get_entity(cls, session: AsyncSession, orm: PlayerORM) -> Player:
@@ -36,19 +28,9 @@ class Player(BaseEntity):
 
     @classmethod
     async def get(cls, session: AsyncSession, id: int) -> Player:
-        se = session
-        async with session() as session:
-            player = await session.scalar(
-                sa.select(PlayerORM)
-                .where(PlayerORM.id == id)
-            )
+        return await super().get(session, id)
 
-            if not player:
-                raise ORMObjectExistsError(cls.__name__, id)
-
-        return Player._get_entity(se, player)
-
-    # def get_games(self, admin: bool) -> list[Game]:
+    # def get_games(self, role: Enum) -> list[Game]:
     #     '''Split this to multiple methods. Rely on `role` parameter.'''
 
     # def get_prizes(self) -> list[Prize]:

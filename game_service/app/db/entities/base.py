@@ -1,5 +1,7 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
+import sqlalchemy as sa
+from app.common.errors import ORMObjectExistsError
 import abc
 
 from app.db.tables import DBBase
@@ -15,9 +17,13 @@ class BaseEntity(abc.ABC):
     def _get_orm(self) -> DBBase:
         '''Factory for `ORM` row representation.'''
 
-    @abc.abstractmethod
     async def create(self) -> None:
         '''Insert new entity to database.'''
+        orm = self._get_orm()
+        async with self.session() as session:
+            async with session.begin():
+                session.add(orm)
+        self.id = orm.id
 
     @classmethod
     @abc.abstractmethod
@@ -25,9 +31,19 @@ class BaseEntity(abc.ABC):
         '''Factory for `Entity` row representation.'''
 
     @classmethod
-    @abc.abstractmethod
     async def get(cls, session: AsyncSession, id: int) -> BaseEntity:
         '''Select entity by `id`.'''
+        se = session
+        async with session() as session:
+            orm = await session.scalar(
+                sa.select(cls.ORM)
+                .where(cls.ORM.id == id)
+            )
+
+            if not orm:
+                raise ORMObjectExistsError(cls.__name__, id)
+
+        return cls._get_entity(se, orm)
 
     @property
     def session(self) -> AsyncSession:
