@@ -1,7 +1,7 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
-from app.common.errors import ORMObjectExistsError
+from app.common.errors import ORMObjectExistsError, ORMIdIsRequiredError
 import abc
 
 from app.db.tables import DBBase
@@ -11,7 +11,7 @@ class BaseEntity(abc.ABC):
     ORM = DBBase
     def __init__(self, session: AsyncSession):
         super().__init__()
-        self._session = session
+        self._session: AsyncSession = session
 
     @abc.abstractmethod
     def _get_orm(self) -> DBBase:
@@ -44,6 +44,19 @@ class BaseEntity(abc.ABC):
                 raise ORMObjectExistsError(cls.__name__, id)
 
         return cls._get_entity(se, orm)
+    
+    async def _update(self, par: str, value):
+        '''Update entity field. `Id` is required.'''
+        if not self.id:
+            raise ORMIdIsRequiredError()
+        
+        async with self.session() as session:
+            async with session.begin():
+                stmt = sa.update(self.ORM).where(
+                    self.ORM.id == self.id).values(
+                    {par: value}
+                )
+                await session.execute(stmt)
 
     @property
     def session(self) -> AsyncSession:

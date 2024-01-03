@@ -13,8 +13,7 @@ class PlayerORM(DBBase):
     icon_link = sa.Column('icon_link', sa.Text)
 
     game_admin = orm.relationship('GameORM', back_populates='admin', foreign_keys='GameORM.admin_id')
-    game_player1 = orm.relationship('GameORM', back_populates='player1', foreign_keys='GameORM.player1_id')
-    game_player2 = orm.relationship('GameORM', back_populates='player2', foreign_keys='GameORM.player2_id')
+    game_player = orm.relationship('GameORM', back_populates='player', foreign_keys='GameORM.player_id')
     field = orm.relationship('FieldORM', back_populates='player')
     prize_admin = orm.relationship('PrizeORM', back_populates='admin', foreign_keys='PrizeORM.admin_id')
     prize_player = orm.relationship('PrizeORM', back_populates='player', foreign_keys='PrizeORM.player_id')

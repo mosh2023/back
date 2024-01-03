@@ -3,7 +3,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
 
 from . import BaseEntity
-from app.db.tables import FieldORM
+from .prize import Prize
+from .boat import Boat
+from app.db.tables import FieldORM, BoatORM, PrizeORM
 
 
 class Field(BaseEntity):
@@ -35,14 +37,11 @@ class Field(BaseEntity):
     async def get(cls, session: AsyncSession, id: int) -> Field:
         return await super().get(session, id)
     
-    # Переопределить метод. Сделать возможным обращаться к незаписанным полям по x, y
-    # Продумать отображение полей и пакетную обработку поля (asyncio.gather)
-    @classmethod
-    async def get_coord(cls, session: AsyncSession, x: int, y: int) -> Field:
+    def get_boat(self) -> Boat | None:
         ...
     
-    # def get_prize(self) -> Prize | None:
-    #     ...
+    def get_prize(self) -> Prize | None:
+        ...
 
     # Автосоздание поля
     def hit(self):

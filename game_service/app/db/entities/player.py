@@ -3,7 +3,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
 
 from . import BaseEntity
-from app.db.tables import PlayerORM
+from .game import Game
+from .prize import Prize
+from app.db.tables import PlayerORM, PrizeORM, GameORM
 
 
 class Player(BaseEntity):
@@ -30,11 +32,31 @@ class Player(BaseEntity):
     async def get(cls, session: AsyncSession, id: int) -> Player:
         return await super().get(session, id)
 
-    # def get_games(self, role: Enum) -> list[Game]:
-    #     '''Split this to multiple methods. Rely on `role` parameter.'''
+    async def set_name(self, name: str):
+        self.name = name
+        await self._update('name', name)
 
-    # def get_prizes(self) -> list[Prize]:
-    #     ...
+    async def set_icon_link(self, icon_link: str):
+        self.icon_link = icon_link
+        await self._update('icon_link', icon_link)
+
+    async def get_games(self) -> list[Game]:
+        se = self.session
+        async with self.session() as session:
+            games = await session.scalars(
+                sa.select(GameORM)
+                .where(GameORM.player_id == self.id)
+            )
+            return [Game._get_entity(se, orm) for orm in games]
+
+    async def get_prizes(self) -> list[Prize]:
+        se = self.session
+        async with self.session() as session:
+            prizes = await session.scalars(
+                sa.select(PrizeORM)
+                .where(PrizeORM.player_id == self.id)
+            )
+            return [Prize._get_entity(se, orm) for orm in prizes]
 
     def __repr__(self) -> str:
         return f'Player(id={self.id}, auth_id={self.auth_id}, name="{self.name}", icon_link=...)'
