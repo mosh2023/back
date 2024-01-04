@@ -4,14 +4,14 @@ import asyncio
 
 
 async def main():
-    id = 16
-    player = Player(async_session, id, 13, 'Vlad')
+    id = 3
+    # player = Player(async_session, id, 15, 'Vlad')
     # await player.create()
 
     pl = await Player.get(async_session, id)
     print(pl)
 
-    await pl.set_name('V1adls1aV')
+    await pl.set_name('Alexander')
 
     pl = await Player.get(async_session, id)
     print(pl)

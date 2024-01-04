@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy import orm
 
-from app.db.tables.base import DBBase
+from .base import DBBase
 
 
 class PrizeORM(DBBase):
@@ -13,7 +13,7 @@ class PrizeORM(DBBase):
     icon_link = sa.Column('icon_link', sa.Text)
     admin_id = sa.Column('admin_id', sa.ForeignKey('player.id'), nullable=False)
     player_id = sa.Column('player_id', sa.ForeignKey('player.id'))
-    dt_won = sa.Column('datetime', sa.TIMESTAMP())
+    dt_won = sa.Column('dt_won', sa.TIMESTAMP())
 
     boat = orm.relationship('BoatORM', back_populates='prize', uselist=False)
     admin = orm.relationship('PlayerORM', back_populates='prize_admin', foreign_keys=[admin_id])

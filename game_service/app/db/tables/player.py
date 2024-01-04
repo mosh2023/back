@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy import orm
 
-from app.db.tables.base import DBBase
+from .base import DBBase
 
 
 class PlayerORM(DBBase):
@@ -14,7 +14,6 @@ class PlayerORM(DBBase):
 
     game_admin = orm.relationship('GameORM', back_populates='admin', foreign_keys='GameORM.admin_id')
     game_player = orm.relationship('GameORM', back_populates='player', foreign_keys='GameORM.player_id')
-    field = orm.relationship('FieldORM', back_populates='player')
     prize_admin = orm.relationship('PrizeORM', back_populates='admin', foreign_keys='PrizeORM.admin_id')
     prize_player = orm.relationship('PrizeORM', back_populates='player', foreign_keys='PrizeORM.player_id')
 

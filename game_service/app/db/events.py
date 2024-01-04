@@ -8,3 +8,9 @@ async def init_db(from_meta=False):
     if from_meta:
         async with engine.begin() as conn:
             await conn.run_sync(metadata.create_all)
+
+async def drop_db():
+    metadata = get_metadata()
+
+    async with engine.begin() as conn:
+        await conn.run_sync(metadata.drop_all)

@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy import orm
 
-from app.db.tables.base import DBBase
+from .base import DBBase
 
 
 class GameORM(DBBase):
@@ -17,7 +17,7 @@ class GameORM(DBBase):
     player_moves = sa.Column('player_moves', sa.Integer)
     
     admin_id = sa.Column('admin_id', sa.ForeignKey('player.id'), nullable=False)
-    dt_start = sa.Column('datetime_start', sa.TIMESTAMP())
+    dt_start = sa.Column('dt_start', sa.TIMESTAMP())
 
     field = orm.relationship('FieldORM', back_populates='game')
     player = orm.relationship('PlayerORM', back_populates='game_player', foreign_keys=[player_id])

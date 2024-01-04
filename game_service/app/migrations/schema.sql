@@ -1,3 +1,15 @@
+-- public.alembic_version definition
+
+-- Drop table
+
+-- DROP TABLE public.alembic_version;
+
+CREATE TABLE public.alembic_version (
+	version_num varchar(32) NOT NULL,
+	CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num)
+);
+
+
 -- public.player definition
 
 -- Drop table
@@ -26,20 +38,14 @@ CREATE TABLE public.game (
 	description text NULL,
 	board_size int4 NOT NULL,
 	"key" varchar(10) NOT NULL,
-	player1_id int4 NULL,
-	player1_remaining_moves int4 NULL,
-	player1_used_moves int4 NULL,
-	player2_id int4 NULL,
-	player2_remaining_moves int4 NULL,
-	player2_used_moves int4 NULL,
 	admin_id int4 NOT NULL,
-	datetime_start timestamp NULL,
-	datetime_end timestamp NULL,
+	player_id int4 NULL,
+	player_moves int4 NULL,
+	dt_start timestamp NULL,
 	CONSTRAINT game_key_key UNIQUE (key),
 	CONSTRAINT game_pkey PRIMARY KEY (id),
 	CONSTRAINT game_admin_id_fkey FOREIGN KEY (admin_id) REFERENCES public.player(id),
-	CONSTRAINT game_player1_id_fkey FOREIGN KEY (player1_id) REFERENCES public.player(id),
-	CONSTRAINT game_player2_id_fkey FOREIGN KEY (player2_id) REFERENCES public.player(id)
+	CONSTRAINT game_player_id_fkey FOREIGN KEY (player_id) REFERENCES public.player(id)
 );
 
 
@@ -56,7 +62,7 @@ CREATE TABLE public.prize (
 	icon_link text NULL,
 	admin_id int4 NOT NULL,
 	player_id int4 NULL,
-	datetime timestamp NULL,
+	dt_won timestamp NULL,
 	CONSTRAINT prize_pkey PRIMARY KEY (id),
 	CONSTRAINT prize_admin_id_fkey FOREIGN KEY (admin_id) REFERENCES public.player(id),
 	CONSTRAINT prize_player_id_fkey FOREIGN KEY (player_id) REFERENCES public.player(id)
@@ -89,10 +95,8 @@ CREATE TABLE public.field (
 	x int4 NOT NULL,
 	y int4 NOT NULL,
 	injured bool NOT NULL,
-	player_id int4 NULL,
 	boat_id int4 NULL,
 	CONSTRAINT field_pkey PRIMARY KEY (id),
 	CONSTRAINT field_boat_id_fkey FOREIGN KEY (boat_id) REFERENCES public.boat(id),
-	CONSTRAINT field_game_id_fkey FOREIGN KEY (game_id) REFERENCES public.game(id),
-	CONSTRAINT field_player_id_fkey FOREIGN KEY (player_id) REFERENCES public.player(id)
+	CONSTRAINT field_game_id_fkey FOREIGN KEY (game_id) REFERENCES public.game(id)
 );
