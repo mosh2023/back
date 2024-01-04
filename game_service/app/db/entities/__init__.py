@@ -1,3 +1,8 @@
+'''
+Модуль содержит сущности для абстрактной работы с базой данных. 
+Объекты содержат методы с реализованными запросами к ней.
+'''
+
 from .base import BaseEntity
 from .player import Player
 from .admin import Admin
