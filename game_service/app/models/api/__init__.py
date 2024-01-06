@@ -1,0 +1,5 @@
+from .player import *
+from .game import *
+from .field import *
+from .boat import *
+from .prize import *

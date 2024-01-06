@@ -4,22 +4,22 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-@router.get('/prizes/{player_id}')
+@router.get('/mock/prizes/{player_id}')
 async def get_prizes():
     ...
 
 
-@router.post('/prizes')
+@router.post('/mock/prizes')
 async def create_prize():
     ...
 
 
-@router.put('/prizes')
+@router.put('/mock/prizes')
 async def edit_prize():
     ...
 
 
-@router.delete('/prizes')
+@router.delete('/mock/prizes')
 async def delete_prize():
     ...
 
