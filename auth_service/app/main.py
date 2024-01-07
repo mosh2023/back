@@ -1,4 +1,4 @@
-from app.routes import router
+from app.api.routes.v1.auth import router
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
