@@ -9,5 +9,4 @@ COPY requirements.txt /usr/app/requirements.txt
 
 RUN pip install -r /usr/app/requirements.txt
 
-ENV PYTHONPATH "${PYTHONPATH}:/app"
 COPY . .
