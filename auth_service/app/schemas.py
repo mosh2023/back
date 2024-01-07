@@ -23,7 +23,7 @@ class UserAuth(BaseSchema):
 
 
 class UserGet(BaseSchema):
-    id: str
+    id: int
     login: str
     password: str
     is_admin: bool
