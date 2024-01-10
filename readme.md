@@ -1,8 +1,12 @@
 
 
-# Запуск проекта
+# Project launch
 
-1. Добавить файлы .env
-2. Выполнить команду `docker-compose up --build -d` из директории `./auth_service` `./game_service` 
-3. Выполнить команду `alembic upgrade head` из директории `../app` - создание таблиц в бд
-4. Запуск веб-сервера: `python cli.py auth` `python cli.py game` из директории `./auth_service` `./game_service`
+1. Add files .env
+
+## Mock
+1. Dependency installation`pip install -r requirements.dev.txt`
+2. Starting a web server: `python cli.py auth` `python cli.py game` from directory `./auth_service` `./game_service`
+## API with database 
+1. Execute the command `docker-compose up --build -d` from directory `./auth_service` `./game_service` 
+2. Execute the command `alembic upgrade head` from directory `../app` - table migration
