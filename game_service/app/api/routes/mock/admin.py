@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from models.api import Id, GameInfo, GameEdit, GameMoves
+from app.models.api import Id, GameInfo, GameEdit, GameMoves
 
 
 router = APIRouter()

@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from models.api import GameKey, Hit
+from app.models.api import GameKey, Hit
 
 router = APIRouter()
 

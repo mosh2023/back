@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from models.api import Id, PrizeModel, PrizeInfo, PrizeEdit
+from app.models.api import Id, PrizeModel, PrizeInfo, PrizeEdit
 from datetime import datetime
 
 router = APIRouter()

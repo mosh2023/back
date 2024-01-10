@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from models.api import Id, BoatInfo, BoatPlace
+from app.models.api import Id, BoatInfo, BoatPlace
 
 
 router = APIRouter()

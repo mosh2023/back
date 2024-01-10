@@ -15,7 +15,7 @@ from app.core import config
 # from app.core.middleware import exception_handle_middleware
 # from app.core.middleware import log_service_response
 
-from api.routes import mock_routers
+from app.api.routes import mock_routers
 
 
 logging.getLogger("charset_normalizer").disabled = True

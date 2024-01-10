@@ -1,6 +1,7 @@
 from fastapi import APIRouter
-from models.api import GameModel, FieldModel, BoatModel, PrizeModel
+from app.models.api import GameModel, FieldModel, BoatModel, PrizeModel
 from datetime import datetime
+from typing import Optional
 
 router = APIRouter()
 
@@ -29,7 +30,7 @@ async def get_games(player_id: int) -> list[GameModel]:
 
 
 @router.get('/mock/game/{game_id}')
-async def get_game(game_id: int) -> GameModel:
+async def get_game(game_id: int) -> Optional[GameModel]:
     if game_id != 1: return None
     return {'id': 1,
             'name': 'TheFirstGame',
@@ -43,7 +44,7 @@ async def get_game(game_id: int) -> GameModel:
             }
 
 
-@router.get('/mock/fields/{game_id}')
+@router.get('/mock/game/fields/{game_id}')
 async def get_fields(game_id: int) -> list[FieldModel]:
     if game_id != 1: return []
     return [{'id': 1,
@@ -68,7 +69,7 @@ async def get_fields(game_id: int) -> list[FieldModel]:
             }]
 
 
-@router.get('/mock/boats/{game_id}')
+@router.get('/mock/game/boats/{game_id}')
 async def get_boats(game_id: int) -> list[BoatModel]:
     if game_id != 1: return []
     return [{'id': 1,
@@ -79,7 +80,7 @@ async def get_boats(game_id: int) -> list[BoatModel]:
             }]
 
 
-@router.get('/mock/prizes/{game_id}')
+@router.get('/mock/game/prizes/{game_id}')
 async def get_prizes(game_id: int) -> list[PrizeModel]:
     if game_id != 1: return []
     return [{'id': 1,

@@ -1,12 +1,13 @@
 from fastapi import APIRouter
-from models.api import Id, PlayerModel, PlayerInfo, PlayerEdit
-
+from app.models.api import Id, PlayerModel, PlayerInfo, PlayerEdit
+from typing import Optional
 
 router = APIRouter()
 
 
 @router.get('/mock/profile/{player_id}')
-async def get_profile() -> PlayerModel:
+async def get_profile(player_id: int) -> Optional[PlayerModel]:
+    if player_id != 2: return None
     return {'id': 2, 
             'auth_id': 3, 
             'name': 'V1adls1aV', 
