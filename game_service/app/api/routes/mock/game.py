@@ -76,13 +76,15 @@ async def get_fields(game_id: int) -> list[FieldModel]:
              'game_id': 1,
              'x': 0,
              'y': 3,
-             'injured': True
+             'injured': True,
+             'player_id': 2
             },
             {'id': 2,
              'game_id': 1,
              'x': 5,
              'y': 3,
              'injured': True,
+             'player_id': 2,
              'boat_id': 1,
             },
             {'id': 1,
