@@ -2,7 +2,7 @@ import databases
 import ormar
 import sqlalchemy
 
-from app.settings import settings
+from settings import settings
 
 
 postgres_dsn = (
