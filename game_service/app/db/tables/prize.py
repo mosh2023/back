@@ -16,8 +16,8 @@ class PrizeORM(DBBase):
     dt_won = sa.Column('dt_won', sa.TIMESTAMP())
 
     boat = orm.relationship('BoatORM', back_populates='prize', uselist=False)
-    admin = orm.relationship('UserORM', back_populates='prize_admin', foreign_keys=[admin_id])
-    player = orm.relationship('UserORM', back_populates='prize_user', foreign_keys=[user_id])
+    admin = orm.relationship('UserORM', back_populates='admin_prizes', foreign_keys=[admin_id])
+    player = orm.relationship('UserORM', back_populates='user_prizes', foreign_keys=[user_id])
 
     def __repr__(self) -> str:
         return f'PrizeORM(id={self.id}, name={self.name}, description=..., icon_link=..., ' \

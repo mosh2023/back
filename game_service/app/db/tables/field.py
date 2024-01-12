@@ -15,8 +15,8 @@ class FieldORM(DBBase):
     player_id = sa.Column('player_id', sa.ForeignKey('player.id'))
     boat_id = sa.Column('boat_id', sa.ForeignKey('boat.id'))
 
-    game = orm.relationship('GameORM', back_populates='field', foreign_keys=[game_id])
-    player = orm.relationship('PlayerORM', back_populates='field', foreign_keys=[player_id])
+    game = orm.relationship('GameORM', back_populates='fields', foreign_keys=[game_id])
+    player = orm.relationship('PlayerORM', back_populates='fields', foreign_keys=[player_id])
     boat = orm.relationship('BoatORM', back_populates='field', foreign_keys=[boat_id])
 
     def __repr__(self) -> str:

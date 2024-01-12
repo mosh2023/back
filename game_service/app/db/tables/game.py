@@ -19,10 +19,10 @@ class GameORM(DBBase):
     admin_id = sa.Column('admin_id', sa.ForeignKey('user.id'), nullable=False)
     dt_start = sa.Column('dt_start', sa.TIMESTAMP())
 
-    field = orm.relationship('FieldORM', back_populates='game')
-    player1 = orm.relationship('PlayerORM', back_populates='game1', foreign_keys=[player1_id])
-    player2 = orm.relationship('PlayerORM', back_populates='game2', foreign_keys=[player2_id])    
-    admin = orm.relationship('UserORM', back_populates='game_admin', foreign_keys=[admin_id])
+    fields = orm.relationship('FieldORM', back_populates='game')
+    player1 = orm.relationship('PlayerORM', back_populates='games1', foreign_keys=[player1_id])
+    player2 = orm.relationship('PlayerORM', back_populates='games2', foreign_keys=[player2_id])    
+    admin = orm.relationship('UserORM', back_populates='admin_games', foreign_keys=[admin_id])
 
     def __repr__(self) -> str:
         return f'GameORM(id={self.id}, name={self.name}, description=..., board_size={self.board_size}, ' \
