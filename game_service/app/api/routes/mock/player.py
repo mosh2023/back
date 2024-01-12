@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from app.models.api import GameKey, Hit
 
+
 router = APIRouter()
 
 

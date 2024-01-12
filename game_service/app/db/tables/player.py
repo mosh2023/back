@@ -8,14 +8,15 @@ class PlayerORM(DBBase):
     __tablename__ = 'player'
 
     id = sa.Column('id', sa.Integer, primary_key=True, autoincrement=True)
-    auth_id = sa.Column('auth_id', sa.Integer, nullable=False, unique=True)
-    name = sa.Column('name', sa.VARCHAR(50), nullable=False)
-    icon_link = sa.Column('icon_link', sa.Text)
+    user_id = sa.Column('user_id', sa.ForeignKey('user.id'))
+    remaining_moves = sa.Column('remaining_moves', sa.Integer, nullable=False)
+    used_moves = sa.Column('used_moves', sa.Integer, nullable=False)
 
-    game_admin = orm.relationship('GameORM', back_populates='admin', foreign_keys='GameORM.admin_id')
-    game_player = orm.relationship('GameORM', back_populates='player', foreign_keys='GameORM.player_id')
-    prize_admin = orm.relationship('PrizeORM', back_populates='admin', foreign_keys='PrizeORM.admin_id')
-    prize_player = orm.relationship('PrizeORM', back_populates='player', foreign_keys='PrizeORM.player_id')
+    user = orm.relationship('UserORM', back_populates='players')
+    games1 = orm.relationship('GameORM', back_populates='player1', foreign_keys='GameORM.player1_id', uselist=False)
+    games2 = orm.relationship('GameORM', back_populates='player2', foreign_keys='GameORM.player2_id', uselist=False)
+    fields = orm.relationship('FieldORM', back_populates='player')
 
     def __repr__(self) -> str:
-        return f'PlayerORM(id={self.id}, auth_id={self.auth_id}, name={self.name}, icon_link=...)'
+        return f'PlayerORM(id={self.id}, user_id={self.user_id}, ' \
+            f'remaining_moves={self.remaining_moves}, used_moves={self.used_moves})'

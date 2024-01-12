@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from .player import PlayerModel
 from datetime import datetime
 
 
@@ -9,8 +10,8 @@ class GameModel(BaseModel):
     board_size: int = Field(gt=0)
     key: str = Field(min_length=4, max_length=10)
 
-    player_id: int = Field(gt=0, default=None)
-    player_moves: int = Field(gt=-1, default=None)
+    player1: PlayerModel = None
+    player2: PlayerModel = None
 
     admin_id: int = Field(gt=0)
     dt_start: datetime = None
@@ -31,7 +32,7 @@ class GameEdit(BaseModel):
 
 
 class GameKey(BaseModel):
-    player_id: int = Field(gt=0)
+    user_id: int = Field(gt=0)
     key: str = Field(min_length=4, max_length=10)
 
 

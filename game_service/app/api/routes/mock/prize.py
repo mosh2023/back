@@ -2,17 +2,17 @@ from fastapi import APIRouter
 from app.models.api import Id, PrizeModel, PrizeInfo, PrizeEdit
 from datetime import datetime
 
+
 router = APIRouter()
 
 
-# Как будем поступать с админами? Разделять автоматом?
 @router.get('/mock/prizes/{player_id}')
 async def get_prizes(player_id: int) -> list[PrizeModel]:
     if player_id != 2: return []
     return [{'id': 4,
              'name': 'The Best Prize',
              'admin_id': 1,
-             'player_id': 2,
+             'user_id': 2,
              'dt_won': datetime.now()}]
 
 

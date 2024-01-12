@@ -11,14 +11,14 @@ class PrizeORM(DBBase):
     name = sa.Column('name', sa.VARCHAR(50), nullable=False)
     description = sa.Column('description', sa.Text)
     icon_link = sa.Column('icon_link', sa.Text)
-    admin_id = sa.Column('admin_id', sa.ForeignKey('player.id'), nullable=False)
-    player_id = sa.Column('player_id', sa.ForeignKey('player.id'))
+    admin_id = sa.Column('admin_id', sa.ForeignKey('user.id'), nullable=False)
+    user_id = sa.Column('user_id', sa.ForeignKey('user.id'))
     dt_won = sa.Column('dt_won', sa.TIMESTAMP())
 
     boat = orm.relationship('BoatORM', back_populates='prize', uselist=False)
-    admin = orm.relationship('PlayerORM', back_populates='prize_admin', foreign_keys=[admin_id])
-    player = orm.relationship('PlayerORM', back_populates='prize_player', foreign_keys=[player_id])
+    admin = orm.relationship('UserORM', back_populates='admin_prizes', foreign_keys=[admin_id])
+    player = orm.relationship('UserORM', back_populates='user_prizes', foreign_keys=[user_id])
 
     def __repr__(self) -> str:
         return f'PrizeORM(id={self.id}, name={self.name}, description=..., icon_link=..., ' \
-            f'admin_id={self.admin_id}, player_id={self.player_id}, dt_won={self.dt_won})'
+            f'admin_id={self.admin_id}, user_id={self.user_id}, dt_won={self.dt_won})'

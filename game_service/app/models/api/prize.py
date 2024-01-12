@@ -8,7 +8,7 @@ class PrizeModel(BaseModel):
     description: str = None
     icon_link: str = None
     admin_id: int = Field(gt=0)
-    player_id: int = Field(gt=0)
+    user_id: int = Field(gt=0)
     dt_won: datetime = None
 
 

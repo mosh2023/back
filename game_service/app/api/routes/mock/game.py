@@ -3,6 +3,7 @@ from app.models.api import GameModel, FieldModel, BoatModel, PrizeModel
 from datetime import datetime
 from typing import Optional
 
+
 router = APIRouter()
 
 
@@ -14,8 +15,18 @@ async def get_games(player_id: int) -> list[GameModel]:
              'description': 'smth about',
              'board_size': 7,
              'key': 'ARSA12',
-             'player_id': 2,
-             'player_moves': 4,
+             'player1': {
+                 'id': 1,
+                 'user_id': 1,
+                 'remaining_moves': 2,
+                 'used_moves': 1
+             },
+             'player2': {
+                 'id': 2,
+                 'user_id': 2,
+                 'remaining_moves': 3,
+                 'used_moves': 2
+             },
              'admin_id': 3,
              'dt_start': datetime.now()
             },
@@ -23,8 +34,12 @@ async def get_games(player_id: int) -> list[GameModel]:
              'name': 'TheSecondGame',
              'board_size': 5,
              'key': 'URSU23',
-             'player_id': 2,
-             'player_moves': 1,
+             'player1': {
+                 'id': 2,
+                 'user_id': 2,
+                 'remaining_moves': 1,
+                 'used_moves': 0
+             },
              'admin_id': 1
              }]
 
@@ -33,14 +48,24 @@ async def get_games(player_id: int) -> list[GameModel]:
 async def get_game(game_id: int) -> Optional[GameModel]:
     if game_id != 1: return None
     return {'id': 1,
-            'name': 'TheFirstGame',
-            'description': 'smth about',
-            'board_size': 7,
-            'key': 'URSU23',
-            'player_id': 2,
-            'player_moves': 4,
-            'admin_id': 3,
-            'dt_start': datetime.now()
+             'name': 'TheFirstGame',
+             'description': 'smth about',
+             'board_size': 7,
+             'key': 'ARSA12',
+             'player1': {
+                 'id': 1,
+                 'user_id': 1,
+                 'remaining_moves': 2,
+                 'used_moves': 1
+             },
+             'player2': {
+                 'id': 2,
+                 'user_id': 2,
+                 'remaining_moves': 3,
+                 'used_moves': 2
+             },
+             'admin_id': 3,
+             'dt_start': datetime.now()
             }
 
 
@@ -51,13 +76,15 @@ async def get_fields(game_id: int) -> list[FieldModel]:
              'game_id': 1,
              'x': 0,
              'y': 3,
-             'injured': True
+             'injured': True,
+             'player_id': 2
             },
             {'id': 2,
              'game_id': 1,
              'x': 5,
              'y': 3,
              'injured': True,
+             'player_id': 2,
              'boat_id': 1,
             },
             {'id': 1,
@@ -86,13 +113,14 @@ async def get_prizes(game_id: int) -> list[PrizeModel]:
     return [{'id': 1,
              'name': 'Промокод 500 биомашинкоинов',
              'admin_id': 2,
-             'player_id': 4
+             'user_id': 4
             },
             {'id': 2,
              'name': 'Полтос от Владоса',
              'description': 'То, чего ты так долго ждал.',
              'icon_link': 'https://avatars.mds.yandex.net/i?id=afd3bff4da0e5925c9b786ebc086b8a895c23666-10590187-images-thumbs&n=13',
+             # In `icon_link` field we will place link to Minio storage.
              'admin_id': 2,
-             'player_id': 4,
+             'user_id': 4,
              'dt_won': datetime.now()
             }]
