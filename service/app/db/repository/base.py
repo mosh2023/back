@@ -1,9 +1,10 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
-from app.common.errors import ORMObjectExistsError, ORMIdIsRequiredError
 import abc
 
+from app.common.errors import ORMObjectExistsError, ORMIdIsRequiredError, ORMNoFieldsToUpdateError
+from pydantic import BaseModel
 from app.db.tables import DBBase
 
 
@@ -18,7 +19,7 @@ class BaseRepository(abc.ABC):
         '''Factory for `ORM` row representation.'''
 
     async def create(self) -> None:
-        '''Insert new entity to database.'''
+        '''Insert new `Repository` to database.'''
         orm = self._get_orm()
         async with self.session() as session:
             async with session.begin():
@@ -27,36 +28,48 @@ class BaseRepository(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def _get_entity(cls, session: AsyncSession, orm: DBBase) -> BaseEntity:
-        '''Factory for `Entity` row representation.'''
+    def get_repository(cls, session: AsyncSession, orm: BaseModel) -> BaseRepository:
+        '''Factory for `Repository` row representation.'''
 
     @classmethod
-    async def get(cls, session: AsyncSession, id: int) -> BaseEntity:
-        '''Select entity by `id`.'''
+    async def get(cls, session: AsyncSession, id: int) -> BaseRepository:
+        '''Select `Repository` by `id`.'''
         se = session
         async with session() as session:
-            orm = await session.scalar(
-                sa.select(cls.ORM)
-                .where(cls.ORM.id == id)
-            )
+            orm = await session.get(cls.ORM, id)
 
             if not orm:
                 raise ORMObjectExistsError(cls.__name__, id)
 
-        return cls._get_entity(se, orm)
+        return cls.get_repository(se, orm)
     
-    async def _update(self, par: str, value):
-        '''Update entity field. `Id` is required.'''
+    async def _update(self, fields: dict):
+        '''Update `Repository` field. `Id` is required.'''
         if not self.id:
             raise ORMIdIsRequiredError()
         
         async with self.session() as session:
             async with session.begin():
-                stmt = sa.update(self.ORM).where(
-                    self.ORM.id == self.id).values(
-                    {par: value}
-                )
+                stmt = sa.update(self.ORM) \
+                    .where(self.ORM.id == self.id) \
+                    .values(fields)
+                
                 await session.execute(stmt)
+
+    async def _modify(self, d: dict):
+        '''Filters fields with `None` value. Then updates remaining ones.'''
+        for key in d:
+            if d[key] is None:
+                del d[key]
+        
+        if not d:
+            raise ORMNoFieldsToUpdateError()
+        
+        await self._update(d)
+
+    @abc.abstractmethod
+    async def modify(self, **args):
+        '''Updates specified fields (passed as named arguments) in database.'''
 
     @property
     def session(self) -> AsyncSession:

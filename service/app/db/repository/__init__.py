@@ -4,6 +4,7 @@
 '''
 
 from .base import BaseRepository
+from .auth import AuthRepository
 from .player import Player
 from .admin import Admin
 from .game import Game

@@ -10,3 +10,10 @@ class ORMIdIsRequiredError(BaseException):
     def __init__(self, *args: object) -> None:
         '''For executing certain operation value of `id` field is required.'''
         super().__init__('To execute this operation value of `id` field is required.' *args)
+
+
+class ORMNoFieldsToUpdateError(BaseException):
+    '''There is no fields to update. You should set one of the optional parameters.'''
+    def __init__(self, *args: object) -> None:
+        '''There is no fields to update. You should set one of the optional parameters.'''
+        super().__init__('There is no fields to update. You should set one of the optional parameters.', *args)
