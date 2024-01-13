@@ -1,14 +1,11 @@
 .vscode/
-.idea/
-game_service/venv/
-auth_service/venv
+.idea
 
 **/.pytest_cache/**
 **/__pycache__/**
 **/.hypothesis/**
-
+service/.env
 venv
-.env
+
 .coverage
-/game_service/dockerfiles/
-/auth_service/dockerfiles/
+/service/dockerfiles/
