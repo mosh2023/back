@@ -1,4 +1,12 @@
 from pydantic import BaseModel, Field
+from app.models.db import Roles
+
+
+class AuthModel(BaseModel):
+    id: int = Field(gt=0)
+    login: str = Field(min_length=3, max_length=50)
+    password: str = Field(min_length=8, max_length=128)
+    role: Roles
 
 
 class AuthCreateRequest(BaseModel):

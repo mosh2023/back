@@ -1,13 +1,8 @@
-import enum
 import sqlalchemy as sa
 from sqlalchemy import orm
 
 from .base import DBBase
-
-
-class Roles(enum.Enum):
-    user = 1
-    admin = 2
+from app.models.db import Roles
 
 
 class AuthORM(DBBase):
