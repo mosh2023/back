@@ -2,10 +2,12 @@ from fastapi import APIRouter
 from app.models.api import Id, UserModel, UserInfo, UserEdit
 from typing import Optional
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/mock"
+)
 
 
-@router.get('/mock/user/{user_id}', tags=['user'])
+@router.get('/user/{user_id}', tags=['user'])
 async def get_profile(user_id: int) -> Optional[UserModel]:
     if user_id != 2: return None
     return {'id': 2, 
@@ -16,12 +18,12 @@ async def get_profile(user_id: int) -> Optional[UserModel]:
     # In `icon_link` field we will place link to Minio storage.
 
 
-@router.post('/mock/user', tags=['user'])
+@router.post('/user', tags=['user'])
 async def create_user(player: UserInfo) -> Id:
     return {'id': 2}
 
 
-@router.put('/mock/user', tags=['user'])
+@router.put('/user', tags=['user'])
 async def edit_user(player: UserEdit):
     ...
 

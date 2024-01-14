@@ -5,10 +5,12 @@ from app.models.api import GameKey, Hit
 from app.db.repository import User, Player, Game
 
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/v1"
+)
 
 
-@router.put('/mock/game', tags=['player'])
+@router.put('/game', tags=['player'])
 async def join_game(key: GameKey) -> Player:
     game: Game = Game.get_by_key(key.key)
     if not game:

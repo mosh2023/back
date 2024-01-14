@@ -6,7 +6,9 @@ from app.db.repository import User
 from app.db.setup import async_session
 
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/v1"
+)
 
 
 @router.get('/mock/user/{user_id}', tags=['user'])
