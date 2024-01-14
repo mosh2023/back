@@ -18,6 +18,7 @@ class DBBase:
 
 def get_metadata():
     """Import all project tables"""
+    from .auth import AuthORM
     from .user import UserORM
     from .player import PlayerORM
     from .game import GameORM

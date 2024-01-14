@@ -8,12 +8,13 @@ class UserORM(DBBase):
     __tablename__ = 'user'
 
     id = sa.Column('id', sa.Integer, primary_key=True, autoincrement=True)
-    auth_id = sa.Column('auth_id', sa.Integer, nullable=False, unique=True)
+    auth_id = sa.Column('auth_id', sa.ForeignKey('auth.id'), nullable=False, unique=True)
     name = sa.Column('name', sa.VARCHAR(50), nullable=False)
     icon_link = sa.Column('icon_link', sa.Text)
 
-    players = orm.relationship('PlayerORM', back_populates='user', foreign_keys='PlayerORM.user_id')
-    admin_games = orm.relationship('GameORM', back_populates='admin', foreign_keys='GameORM.admin_id', uselist=False)
+    auth = orm.relationship('AuthORM', back_populates='user')
+    players = orm.relationship('PlayerORM', back_populates='user')
+    admin_games = orm.relationship('GameORM', back_populates='admin', foreign_keys='GameORM.admin_id')
     admin_prizes = orm.relationship('PrizeORM', back_populates='admin', foreign_keys='PrizeORM.admin_id')
     user_prizes = orm.relationship('PrizeORM', back_populates='user', foreign_keys='PrizeORM.user_id')
 

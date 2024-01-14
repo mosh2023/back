@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
+from .base import BaseRepository
 from ..tables.auth import AuthORM
+
 
 class AuthRepository:
     def __init__(self, db: Session):
