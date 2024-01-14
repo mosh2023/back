@@ -3,10 +3,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
 
 from . import BaseRepository
+from .player import Player
 from .game import Game
 from .prize import Prize
-from app.models.db import UserDBModel
-from app.db.tables import UserORM, PrizeORM, GameORM
+from app.models.db import UserDBModel, GamePlayers
+from app.db.tables import UserORM, PlayerORM, PrizeORM, GameORM
 
 
 class User(BaseRepository):
@@ -22,6 +23,10 @@ class User(BaseRepository):
 
     def _get_orm(self) -> UserORM:
         return UserORM(id=self.id, auth_id=self.auth_id, 
+            name=self.name, icon_link=self.icon_link)
+        
+    def get_model(self) -> UserDBModel:
+        return UserDBModel(id=self.id, auth_id=self.auth_id, 
             name=self.name, icon_link=self.icon_link)
 
     @classmethod
@@ -44,7 +49,7 @@ class User(BaseRepository):
                 .where((GameORM.player1.user_id == self.id) | 
                        (GameORM.player2.user_id == self.id))
             )
-            return [Game.get_repository(self.session, orm) for orm in games]
+        return [Game.get_repository(self.session, orm) for orm in games]
 
     async def get_prizes(self) -> list[Prize]:
         async with self.session() as session:
@@ -52,14 +57,25 @@ class User(BaseRepository):
                 sa.select(PrizeORM)
                 .where(PrizeORM.user_id == self.id)
             )
-            return [Prize.get_repository(self.session, orm) for orm in prizes]
+        return [Prize.get_repository(self.session, orm) for orm in prizes]
         
-    async def join_game(self, key: str) -> Game:
-        ...
+    async def join_game(self, game: GamePlayers) -> Player | None:
+        player_num = (game.player1_id, game.player2_id).find(None)
+        if player_num == -1:
+            return None
 
-    # Maybe move this to Player class
-    async def leave_game(self, game_id: int):
-        ...
+        async with self.session() as session:
+            async with session.begin():
+                player = PlayerORM(user_id=self.id, remaining_moves=0, used_moves=0)
+                await session.add(player)
+                await session.flush()
+
+                stmt = sa.update(GameORM) \
+                    .where(GameORM.id == game.id) \
+                    .values({f'player{player_num + 1}_id': player.id})
+                await session.execute(stmt)
+
+        return Player.get_repository(self.session, player)
 
     def __repr__(self) -> str:
         return f'User(id={self.id}, auth_id={self.auth_id}, name="{self.name}", icon_link=...)'

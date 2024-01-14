@@ -30,11 +30,14 @@ class Game(BaseRepository):
         dt_start: datetime | None = dt_start
 
     def _get_orm(self) -> GameORM:
-        return GameORM(
-            id=self.id, name=self.name, description=self.description, board_size=self.board_size, 
-            key=self.key, player1_id=self.player1_id, player2_id=self.player2_id, 
-            admin_id=self.admin_id, dt_start=self.dt_start
-        )
+        return GameORM(id=self.id, name=self.name, description=self.description, 
+            board_size=self.board_size, key=self.key, player1_id=self.player1_id, 
+            player2_id=self.player2_id, admin_id=self.admin_id, dt_start=self.dt_start)
+    
+    def get_model(self) -> GameDBModel:
+        return GameDBModel(id=self.id, name=self.name, description=self.description, 
+            board_size=self.board_size, key=self.key, player1_id=self.player1_id, 
+            player2_id=self.player2_id, admin_id=self.admin_id, dt_start=self.dt_start)
 
     @classmethod
     def get_repository(cls, session: AsyncSession, orm: GameDBModel) -> Game:
@@ -44,6 +47,16 @@ class Game(BaseRepository):
     @classmethod
     async def get(cls, session: AsyncSession, id: int) -> Game:
         return await super().get(session, id)
+    
+    @classmethod
+    async def get_by_key(self, key: str) -> Game | None:
+        async with self.session() as session:
+            game = session.scalar(
+                sa.select(GameORM)
+                .where(GameORM.key == key)
+            )
+        if not game: return None
+        return Game.get_repository(self.session, game)
     
     async def create(self) -> None:
         self.dt_start = datetime.now()

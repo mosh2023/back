@@ -27,6 +27,10 @@ class Field(BaseRepository):
         return FieldORM(id=self.id, game_id=self.game_id, x=self.x, y=self.y, 
             injured=self.injured, player_id=self.player_id, boat_id=self.boat_id)
 
+    def get_model(self) -> FieldDBModel:
+        return FieldDBModel(id=self.id, game_id=self.game_id, x=self.x, y=self.y, 
+            injured=self.injured, player_id=self.player_id, boat_id=self.boat_id)
+
     @classmethod
     def get_repository(cls, session: AsyncSession, orm: FieldDBModel) -> Field:
         return Field(session, orm.id, orm.game_id, orm.x, orm.y, 

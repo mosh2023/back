@@ -14,3 +14,9 @@ class GameDBModel(BaseModel):
 
     admin_id: int = Field(gt=0)
     dt_start: datetime = None
+
+
+class GamePlayers(BaseModel):
+    id: int = Field(gt=0, default=None)
+    player1_id: int = Field(gt=0, default=None)
+    player2_id: int = Field(gt=0, default=None)

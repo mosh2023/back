@@ -27,6 +27,11 @@ class Prize(BaseRepository):
         return PrizeORM(id=self.id, name=self.name, description=self.description,
             icon_link=self.icon_link, user_id=self.user_id, admin_id=self.admin_id,
             dt_won=self.dt_won)
+    
+    def get_model(self) -> PrizeDBModel:
+        return PrizeDBModel(id=self.id, name=self.name, description=self.description,
+            icon_link=self.icon_link, user_id=self.user_id, admin_id=self.admin_id,
+            dt_won=self.dt_won)
 
     @classmethod
     def get_repository(cls, session: AsyncSession, orm: PrizeDBModel) -> Prize:

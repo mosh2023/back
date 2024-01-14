@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
 
 from . import BaseRepository
-from app.models.db import PlayerDBModel
-from app.db.tables import PlayerORM
+from app.models.db import PlayerDBModel, GamePlayers
+from app.db.tables import PlayerORM, GameORM
 
 
 class Player(BaseRepository):
@@ -20,6 +20,10 @@ class Player(BaseRepository):
 
     def _get_orm(self) -> PlayerORM:
         return PlayerORM(id=self.id, user_id=self.user_id, 
+            remaining_moves=self.remaining_moves, used_moves=self.used_moves)
+    
+    def get_model(self) -> PlayerDBModel:
+        return PlayerDBModel(id=self.id, user_id=self.user_id, 
             remaining_moves=self.remaining_moves, used_moves=self.used_moves)
 
     @classmethod
@@ -49,6 +53,20 @@ class Player(BaseRepository):
                     .where(PlayerORM.id == self.id) \
                     .values(remaining_moves=PlayerORM.remaining_moves + moves)
                 
+                await session.execute(stmt)
+
+    async def leave_game(self, game: GamePlayers):
+        player_num = (game.player1_id, game.player2_id).find(self.id)
+        if player_num == -1:
+            return  # raising an error here?
+        pl = f'player{player_num + 1}_id'
+
+        async with self.session() as session:
+            async with session.begin():
+                stmt = sa.update(GameORM) \
+                    .where(getattr(GameORM, pl) == self.id) \
+                    .values({pl: None})
+
                 await session.execute(stmt)
 
     def __repr__(self) -> str:

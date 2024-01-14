@@ -1,4 +1,5 @@
 from __future__ import annotations
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
 
@@ -20,6 +21,10 @@ class Auth(BaseRepository):
 
     def _get_orm(self) -> AuthORM:
         return AuthORM(id=self.id, login=self.login,
+            password=self.password, role=self.role)
+
+    def get_model(self) -> AuthDBModel:
+        return AuthDBModel(id=self.id, login=self.login,
             password=self.password, role=self.role)
     
     @classmethod
