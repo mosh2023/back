@@ -1,0 +1,34 @@
+from fastapi import APIRouter, HTTPException
+
+from app.models.api import Id, UserModel, UserInfo, UserEdit
+from app.common.errors import ORMObjectExistsError
+from app.db.repository import User
+from app.db.setup import async_session
+
+
+router = APIRouter()
+
+
+@router.get('/mock/user/{user_id}', tags=['user'])
+async def get_profile(user_id: int) -> UserModel:
+    try:
+        user: User = await User.get(async_session, user_id)
+        return user.get_model()
+    except ORMObjectExistsError:
+        raise HTTPException(404, f'User with id={user_id} does not exist.')
+
+
+# Добавить проверку на наличие?
+@router.post('/mock/user', tags=['user'])
+async def create_user(user: UserInfo) -> Id:
+    user: User = User.get_repository(async_session, user)
+    await user.create()
+    return Id(id=user.id)
+
+
+# Нужно ли возвращать юзера?
+@router.put('/mock/user', tags=['user'])
+async def edit_user(fields: UserEdit):
+    user: User = await User.get(async_session, fields.id)
+    await user.modify(fields.name, fields.icon_link)
+

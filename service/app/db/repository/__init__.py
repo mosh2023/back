@@ -5,8 +5,9 @@
 
 from .base import BaseRepository
 from .auth import AuthRepository
-from .player import Player
+from .user import User
 from .admin import Admin
+from .player import Player
 from .game import Game
 from .field import Field
 from .boat import Boat

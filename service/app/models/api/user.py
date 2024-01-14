@@ -15,6 +15,7 @@ class UserInfo(BaseModel):
 
 
 class UserEdit(BaseModel):
+    id: int = Field(gt=0)
     name: str = Field(default=None, min_length=3, max_length=50)
     icon_link: str = None
 
