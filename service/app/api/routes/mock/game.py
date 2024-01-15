@@ -9,9 +9,9 @@ router = APIRouter(
 )
 
 
-@router.get('/games/{player_id}', tags=['game'])
-async def get_games(player_id: int) -> list[GameModel]:
-    if player_id != 2: return []
+@router.get('/games/{user_id}', tags=['game'])
+async def get_games(user_id: int) -> list[GameModel]:
+    if user_id != 2: return []
     return [{'id': 1,
              'name': 'TheFirstGame',
              'description': 'smth about',

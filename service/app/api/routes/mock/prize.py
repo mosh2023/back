@@ -8,9 +8,9 @@ router = APIRouter(
 )
 
 
-@router.get('/prizes/{player_id}', tags=['prize'])
-async def get_prizes(player_id: int) -> list[PrizeModel]:
-    if player_id != 2: return []
+@router.get('/prizes/{user_id}', tags=['prize'])
+async def get_prizes(user_id: int) -> list[PrizeModel]:
+    if user_id != 2: return []
     return [{'id': 4,
              'name': 'The Best Prize',
              'prize_id': 1,

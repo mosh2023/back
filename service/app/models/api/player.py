@@ -6,3 +6,8 @@ class PlayerModel(BaseModel):
     user_id: int = Field(gt=0)
     remaining_moves: int = Field(gt=-1)
     used_moves: int = Field(gt=-1)
+
+
+class PlayerMoves(BaseModel):
+    id: int = Field(gt=0)
+    moves: int = Field(gt=0)

@@ -23,7 +23,7 @@ async def get_profile(user_id: int) -> UserModel:
         raise HTTPException(404, f'User with id={user_id} does not exist.')
 
 
-# Добавить проверку на наличие?
+# Добавить проверку на наличие в метод `create`.
 @router.post('/user', tags=['user'])
 async def create_user(user: UserInfo) -> Id:
     user: User = User.get_repository(async_session, user)
@@ -32,6 +32,7 @@ async def create_user(user: UserInfo) -> Id:
 
 
 # Нужно ли возвращать юзера?
+# Тут реальные проблемы с наличием поля `id` без него валидация не пропускает...
 @router.put('/user', tags=['user'])
 async def edit_user(fields: UserEdit):
     user: User = await User.get(async_session, fields.id)

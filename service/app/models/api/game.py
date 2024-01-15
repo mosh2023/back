@@ -26,6 +26,7 @@ class GameInfo(BaseModel):
 
 
 class GameEdit(BaseModel):
+    id: int = Field(gt=0)
     name: str = Field(min_length=3, max_length=50, default=None)
     description: str = None
     board_size: int = Field(gt=0, default=None)
@@ -35,8 +36,3 @@ class GameKey(BaseModel):
     user_id: int = Field(gt=0)
     key: str = Field(min_length=4, max_length=10)
 
-
-class GameMoves(BaseModel):
-    id: int = Field(gt=0)
-    player_id: int = Field(gt=0)
-    add_moves: int = Field(gt=0)

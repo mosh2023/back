@@ -12,7 +12,7 @@ from app.db.tables import FieldORM
 class Field(BaseRepository):
     ORM = FieldORM
     def __init__(self, session: AsyncSession, id: int | None, game_id: int, 
-            x: int, y: int, injured: bool, player_id: int | None, boat_id: int | None):
+            x: int, y: int, injured: bool, player_id: int | None = None, boat_id: int | None = None):
         super().__init__(session)
 
         self.id: int | None = id

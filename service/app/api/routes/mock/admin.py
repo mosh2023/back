@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.models.api import Id, GameInfo, GameEdit, GameMoves
+from app.models.api import Id, GameInfo, GameEdit, PlayerMoves
 
 
 router = APIRouter(
@@ -18,6 +18,6 @@ async def edit_game(game: GameEdit):
 
 
 @router.put('/game/hit', tags=['admin'])
-async def add_shots(moves: GameMoves):
+async def add_shots(moves: PlayerMoves):
     ...
 

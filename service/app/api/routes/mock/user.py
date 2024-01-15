@@ -19,11 +19,11 @@ async def get_profile(user_id: int) -> Optional[UserModel]:
 
 
 @router.post('/user', tags=['user'])
-async def create_user(player: UserInfo) -> Id:
+async def create_user(user: UserInfo) -> Id:
     return {'id': 2}
 
 
 @router.put('/user', tags=['user'])
-async def edit_user(player: UserEdit):
+async def edit_user(user: UserEdit):
     ...
 
