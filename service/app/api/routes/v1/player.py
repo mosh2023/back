@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from app.db.setup import async_session
-from app.models.api import GameKey, Hit
+from app.models.api import GameKey, Hit, PlayerModel
 from app.db.repository import User, Player, Game
 
 
@@ -11,7 +11,7 @@ router = APIRouter(
 
 
 @router.put('/game', tags=['player'])
-async def join_game(key: GameKey) -> Player:
+async def join_game(key: GameKey) -> PlayerModel:
     game: Game = Game.get_by_key(key.key)
     if not game:
         raise HTTPException(404, f'Game with key="{key.key}" does not found.')
@@ -23,6 +23,6 @@ async def join_game(key: GameKey) -> Player:
     return player.get_model()
     
 
-@router.put('/mock/game/hit', tags=['player'])
+@router.put('/game/hit', tags=['player'])
 async def hit(hit: Hit):
     ...

@@ -27,7 +27,7 @@ class User(BaseRepository):
         
     def get_model(self) -> UserDBModel:
         return UserDBModel(id=self.id, auth_id=self.auth_id, 
-            name=self.name, icon_link=self.icon_link)
+            name=self.name)
 
     @classmethod
     def get_repository(cls, session: AsyncSession, orm: UserDBModel) -> User:

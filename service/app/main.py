@@ -15,7 +15,7 @@ from app.core import config
 # from app.core.middleware import exception_handle_middleware
 # from app.core.middleware import log_service_response
 
-from app.api.routes import mock_routers
+from app.api.routes import mock_routers, v1_routers
 
 
 logging.getLogger("charset_normalizer").disabled = True
@@ -41,6 +41,9 @@ def get_application() -> FastAPI:
     # )
 
     for router in mock_routers:
+        app.include_router(router)
+
+    for router in v1_routers:
         app.include_router(router)
 
     return app

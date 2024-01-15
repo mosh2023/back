@@ -21,13 +21,13 @@ class AppSettings(BaseSettings):
     POSTGRES_URL: str = f'postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}' \
         f'@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
 
-    MINIO_ACCESS_KEY: str = env.get('MINIO_ACCESS_KEY')
-    MINIO_SECRET_KEY: str = env.get('MINIO_SECRET_KEY')
-    MINIO_HOST: str = env.get('MINIO_HOST')
-    MINIO_PORT: str = env.get('MINIO_PORT', '9000')
-    MINIO_SECURE: bool = env.get('MINIO_SECURE', 'False') == 'True'
+    # MINIO_ACCESS_KEY: str = env.get('MINIO_ACCESS_KEY')
+    # MINIO_SECRET_KEY: str = env.get('MINIO_SECRET_KEY')
+    # MINIO_HOST: str = env.get('MINIO_HOST')
+    # MINIO_PORT: str = env.get('MINIO_PORT', '9000')
+    # MINIO_SECURE: bool = env.get('MINIO_SECURE', 'False') == 'True'
 
-    MINIO_URL: str = f'http://{MINIO_HOST}:{MINIO_PORT}' if not MINIO_SECURE else f'https://{MINIO_HOST}:{MINIO_PORT}'
+    # MINIO_URL: str = f'http://{MINIO_HOST}:{MINIO_PORT}' if not MINIO_SECURE else f'https://{MINIO_HOST}:{MINIO_PORT}'
 
 
 @lru_cache()
