@@ -21,6 +21,11 @@ async def join_game(key: GameKey) -> PlayerModel:
     if not player:
         raise HTTPException(400, 'You can not join this game. It already has have 2 players.')
     return player.get_model()
+
+
+@router.put('/player/leave')
+async def leave_game(p):
+    ...
     
 
 @router.put('/game/hit', tags=['player'])
