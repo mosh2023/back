@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
 
 from . import BaseRepository
-from app.models.db import PlayerDBModel, GamePlayers
+from app.models.api import PlayerModel, GamePlayers
 from app.db.tables import PlayerORM, GameORM
 
 
@@ -22,12 +22,12 @@ class Player(BaseRepository):
         return PlayerORM(id=self.id, user_id=self.user_id, 
             remaining_moves=self.remaining_moves, used_moves=self.used_moves)
     
-    def get_model(self) -> PlayerDBModel:
-        return PlayerDBModel(id=self.id, user_id=self.user_id, 
+    def get_model(self) -> PlayerModel:
+        return PlayerModel(id=self.id, user_id=self.user_id, 
             remaining_moves=self.remaining_moves, used_moves=self.used_moves)
 
     @classmethod
-    def get_repository(cls, session: AsyncSession, orm: PlayerDBModel) -> Player:
+    def get_repository(cls, session: AsyncSession, orm: PlayerModel) -> Player:
         return Player(session, orm.id, orm.user_id, 
             orm.remaining_moves, orm.used_moves)
 
@@ -36,7 +36,7 @@ class Player(BaseRepository):
         return await super().get(session, id)
     
     @staticmethod
-    async def whose_move_is(player1: PlayerDBModel, player2: PlayerDBModel) -> PlayerDBModel | None:
+    async def whose_move_is(player1: PlayerModel, player2: PlayerModel) -> PlayerModel | None:
         if (player1.used_moves + player2.used_moves) % 2:
             if player2.remaining_moves: return player2
             elif player1.remaining_moves: return player1
@@ -56,9 +56,10 @@ class Player(BaseRepository):
                 await session.execute(stmt)
 
     async def leave_game(self, game: GamePlayers):
-        player_num = (game.player1_id, game.player2_id).find(self.id)
-        if player_num == -1:
-            return  # raising an error here?
+        players = [game.player1_id, game.player2_id]
+        if None not in players:
+            return None
+        player_num = players.index(None)
         pl = f'player{player_num + 1}_id'
 
         async with self.session() as session:

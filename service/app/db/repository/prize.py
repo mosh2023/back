@@ -1,9 +1,8 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
-import sqlalchemy as sa
 
 from . import BaseRepository
-from app.models.db import PrizeDBModel
+from app.models.api import PrizeModel
 from app.db.tables import PrizeORM
 from datetime import datetime
 
@@ -16,25 +15,25 @@ class Prize(BaseRepository):
         super().__init__(session)
 
         self.id: int | None = id
-        name: str = name
-        description: str | None = description
-        icon_link: str | None = icon_link
-        user_id: int | None = user_id
-        admin_id: int = admin_id
-        dt_won: datetime | None = dt_won
+        self.name: str = name
+        self.description: str | None = description
+        self.icon_link: str | None = icon_link
+        self.user_id: int | None = user_id
+        self.admin_id: int = admin_id
+        self.dt_won: datetime | None = dt_won
 
     def _get_orm(self) -> PrizeORM:
         return PrizeORM(id=self.id, name=self.name, description=self.description,
             icon_link=self.icon_link, user_id=self.user_id, admin_id=self.admin_id,
             dt_won=self.dt_won)
     
-    def get_model(self) -> PrizeDBModel:
-        return PrizeDBModel(id=self.id, name=self.name, description=self.description,
+    def get_model(self) -> PrizeModel:
+        return PrizeModel(id=self.id, name=self.name, description=self.description,
             icon_link=self.icon_link, user_id=self.user_id, admin_id=self.admin_id,
             dt_won=self.dt_won)
 
     @classmethod
-    def get_repository(cls, session: AsyncSession, orm: PrizeDBModel) -> Prize:
+    def get_repository(cls, session: AsyncSession, orm: PrizeModel) -> Prize:
         return Prize(session, orm.id, orm.name, orm.description, orm.icon_link, 
             orm.user_id, orm.admin_id, orm.dt_won)
 

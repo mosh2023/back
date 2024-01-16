@@ -1,8 +1,9 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 
 
 class PlayerModel(BaseModel):
-    id: int = Field(gt=0)
+    id: Optional[int] = Field(gt=0, default=None)
     user_id: int = Field(gt=0)
     remaining_moves: int = Field(gt=-1)
     used_moves: int = Field(gt=-1)
@@ -11,3 +12,9 @@ class PlayerModel(BaseModel):
 class PlayerMoves(BaseModel):
     id: int = Field(gt=0)
     moves: int = Field(gt=0)
+
+
+class GamePlayers(BaseModel):
+    id: int = Field(gt=0)
+    player1_id: Optional[int] = Field(gt=0, default=None)
+    player2_id: Optional[int] = Field(gt=0, default=None)

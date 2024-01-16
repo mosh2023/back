@@ -2,7 +2,7 @@ import sqlalchemy as sa
 from sqlalchemy import orm
 
 from .base import DBBase
-from app.models.db import Roles
+from app.models.api import Roles
 
 
 class AuthORM(DBBase):

@@ -1,13 +1,14 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
+from typing import Iterable
 from datetime import datetime
 
 from . import BaseRepository
 from .field import Field
 from .boat import Boat
 from .prize import Prize
-from app.models.db import GameDBModel
+from app.models.api import GameModel
 from app.db.tables import GameORM, FieldORM, BoatORM, PrizeORM
 
 
@@ -20,28 +21,28 @@ class Game(BaseRepository):
         super().__init__(session)
 
         self.id: int | None = id
-        name: str = name
-        description: str | None = description
-        board_size: int = board_size 
-        key: str = key 
-        player1_id: int | None = player1_id
-        player2_id: int | None = player2_id
-        admin_id: int = admin_id
-        dt_start: datetime | None = dt_start
+        self.name: str = name
+        self.description: str | None = description
+        self.board_size: int = board_size 
+        self.key: str = key 
+        self.player1_id: int | None = player1_id
+        self.player2_id: int | None = player2_id
+        self.admin_id: int = admin_id
+        self.dt_start: datetime | None = dt_start
 
     def _get_orm(self) -> GameORM:
         return GameORM(id=self.id, name=self.name, description=self.description, 
             board_size=self.board_size, key=self.key, player1_id=self.player1_id, 
             player2_id=self.player2_id, admin_id=self.admin_id, dt_start=self.dt_start)
     
-    def get_model(self) -> GameDBModel:
-        return GameDBModel(id=self.id, name=self.name, description=self.description, 
+    def get_model(self) -> GameModel:
+        return GameModel(id=self.id, name=self.name, description=self.description, 
             board_size=self.board_size, key=self.key, player1_id=self.player1_id, 
             player2_id=self.player2_id, admin_id=self.admin_id, dt_start=self.dt_start)
 
     @classmethod
-    def get_repository(cls, session: AsyncSession, orm: GameDBModel) -> Game:
-        return GameORM(session, orm.id, orm.name, orm.description, orm.board_size, 
+    def get_repository(cls, session: AsyncSession, orm: GameModel) -> Game:
+        return Game(session, orm.id, orm.name, orm.description, orm.board_size, 
             orm.key, orm.player1_id, orm.player2_id, orm.admin_id, orm.dt_start)
 
     @classmethod
@@ -49,14 +50,14 @@ class Game(BaseRepository):
         return await super().get(session, id)
     
     @classmethod
-    async def get_by_key(self, key: str) -> Game | None:
-        async with self.session() as session:
-            game = session.scalar(
+    async def get_by_key(cls, session: AsyncSession, key: str) -> Game | None:
+        async with session() as session:
+            game = await session.scalar(
                 sa.select(GameORM)
                 .where(GameORM.key == key)
             )
         if not game: return None
-        return Game.get_repository(self.session, game)
+        return Game.get_repository(session, game)
     
     async def create(self) -> None:
         self.dt_start = datetime.now()
@@ -70,30 +71,30 @@ class Game(BaseRepository):
         await self._modify({'name': name, 'description': description, 
                             'board_size': board_size})
 
-    async def get_fields(self) -> list[Field]:
+    async def get_fields(self) -> Iterable[Field]:
         async with self.session() as session:
             fields = await session.scalars(
                 sa.select(FieldORM)
                 .where(FieldORM.game_id == self.id)
             )
-            return [Field.get_repository(self.session, orm) for orm in fields]
+            return (Field.get_repository(self.session, orm) for orm in fields)
 
-    async def get_boats(self) -> list[Boat]:
+    async def get_boats(self) -> Iterable[Boat]:
         async with self.session() as session:
             boats = await session.scalars(
                 sa.select(BoatORM)
                 .where(BoatORM.field.game_id == self.id)
             )
-            return [Boat.get_repository(self.session, orm) for orm in boats]
+            return (Boat.get_repository(self.session, orm) for orm in boats)
         
-    async def get_prizes(self) -> list[Prize]:
+    async def get_prizes(self) -> Iterable[Prize]:
         async with self.session() as session:
             prizes = await session.scalars(
                 sa.select(PrizeORM)
                 .join(PrizeORM.boat)
                 .where(BoatORM.field.game_id == self.id)
             )
-            return [Prize.get_repository(self.session, orm) for orm in prizes]
+            return (Prize.get_repository(self.session, orm) for orm in prizes)
 
     def __repr__(self) -> str:
         return f'Game(id={self.id}, name="{self.name}", description=..., board_size={self.board_size}, ' \

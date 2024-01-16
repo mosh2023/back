@@ -62,7 +62,7 @@ class BaseRepository(abc.ABC):
 
     async def _modify(self, d: dict):
         '''Filters fields with `None` value. Then updates remaining ones.'''
-        for key in d:
+        for key in list(d.keys()):
             if d[key] is None:
                 del d[key]
         
@@ -70,10 +70,6 @@ class BaseRepository(abc.ABC):
             raise ORMNoFieldsToUpdateError(self.__class__.__name__, self.id)
         
         await self._update(d)
-
-    @abc.abstractmethod
-    async def modify(self, **args):
-        '''Updates specified fields (passed as named arguments) in database.'''
 
     @property
     def session(self) -> AsyncSession:

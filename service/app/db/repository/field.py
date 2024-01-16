@@ -1,11 +1,8 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
-import sqlalchemy as sa
 
 from . import BaseRepository
-from .prize import Prize
-from .boat import Boat
-from app.models.db import FieldDBModel
+from app.models.api import FieldModel
 from app.db.tables import FieldORM
 
 
@@ -27,12 +24,12 @@ class Field(BaseRepository):
         return FieldORM(id=self.id, game_id=self.game_id, x=self.x, y=self.y, 
             injured=self.injured, player_id=self.player_id, boat_id=self.boat_id)
 
-    def get_model(self) -> FieldDBModel:
-        return FieldDBModel(id=self.id, game_id=self.game_id, x=self.x, y=self.y, 
+    def get_model(self) -> FieldModel:
+        return FieldModel(id=self.id, game_id=self.game_id, x=self.x, y=self.y, 
             injured=self.injured, player_id=self.player_id, boat_id=self.boat_id)
 
     @classmethod
-    def get_repository(cls, session: AsyncSession, orm: FieldDBModel) -> Field:
+    def get_repository(cls, session: AsyncSession, orm: FieldModel) -> Field:
         return Field(session, orm.id, orm.game_id, orm.x, orm.y, 
             orm.injured, orm.player_id, orm.boat_id)
 

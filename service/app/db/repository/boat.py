@@ -1,9 +1,8 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
-import sqlalchemy as sa
 
 from . import BaseRepository
-from app.models.db import BoatDBModel
+from app.models.api import BoatModel
 from app.db.tables import BoatORM
 
 
@@ -18,11 +17,11 @@ class Boat(BaseRepository):
     def _get_orm(self) -> BoatORM:
         return BoatORM(id=self.id, prize_id=self.prize_id)
     
-    def get_model(self) -> BoatDBModel:
-        return BoatDBModel(id=self.id, prize_id=self.prize_id)
+    def get_model(self) -> BoatModel:
+        return BoatModel(id=self.id, prize_id=self.prize_id)
 
     @classmethod
-    def get_repository(cls, session: AsyncSession, orm: BoatDBModel) -> Boat:
+    def get_repository(cls, session: AsyncSession, orm: BoatModel) -> Boat:
         return Boat(session, orm.id, orm.prize_id)
     
     @classmethod

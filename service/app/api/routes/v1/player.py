@@ -10,13 +10,13 @@ router = APIRouter(
 )
 
 
-@router.put('/game', tags=['player'])
+@router.put('/player/join')
 async def join_game(key: GameKey) -> PlayerModel:
-    game: Game = Game.get_by_key(key.key)
+    game: Game = await Game.get_by_key(async_session, key.key)
     if not game:
         raise HTTPException(404, f'Game with key="{key.key}" does not found.')
-    user: User = User.get(async_session, key.user_id)
-    player: Player = user.join_game(game)
+    user: User = await User.get(async_session, key.user_id)
+    player: Player = await user.join_game(game)
     
     if not player:
         raise HTTPException(400, 'You can not join this game. It already has have 2 players.')

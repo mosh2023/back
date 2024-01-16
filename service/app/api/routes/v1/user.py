@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException
 
-from app.models.db import UserDBModel
 from app.models.api import Id, UserModel, UserInfo, UserEdit
 from app.common.errors import ORMObjectExistsError
 from app.db.repository import User
@@ -16,8 +15,6 @@ router = APIRouter(
 async def get_profile(user_id: int) -> UserModel:
     try:
         user: User = await User.get(async_session, user_id)
-        print(user)
-        print(user.get_model())
         return user.get_model()
     except ORMObjectExistsError:
         raise HTTPException(404, f'User with id={user_id} does not exist.')
@@ -37,4 +34,6 @@ async def create_user(user: UserInfo) -> Id:
 async def edit_user(fields: UserEdit):
     user: User = await User.get(async_session, fields.id)
     await user.modify(fields.name, fields.icon_link)
+    print(user.icon_link)
+
 

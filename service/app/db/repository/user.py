@@ -1,12 +1,13 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
+from typing import Iterable
 
 from . import BaseRepository
 from .player import Player
 from .game import Game
 from .prize import Prize
-from app.models.db import UserDBModel, GamePlayers
+from app.models.api import UserModel, GamePlayers
 from app.db.tables import UserORM, PlayerORM, PrizeORM, GameORM
 
 
@@ -25,12 +26,12 @@ class User(BaseRepository):
         return UserORM(id=self.id, auth_id=self.auth_id, 
             name=self.name, icon_link=self.icon_link)
         
-    def get_model(self) -> UserDBModel:
-        return UserDBModel(id=self.id, auth_id=self.auth_id, 
-            name=self.name)
+    def get_model(self) -> UserModel:
+        return UserModel(id=self.id, auth_id=self.auth_id, 
+            name=self.name, icon_link=self.icon_link)
 
     @classmethod
-    def get_repository(cls, session: AsyncSession, orm: UserDBModel) -> User:
+    def get_repository(cls, session: AsyncSession, orm: UserModel) -> User:
         return User(session, orm.id, orm.auth_id, orm.name, orm.icon_link)
 
     @classmethod
@@ -42,32 +43,33 @@ class User(BaseRepository):
         if icon_link is not None: self.icon_link = icon_link
         await self._modify({'name': name, 'icon_link': icon_link})
 
-    async def get_games(self) -> list[Game]:
+    async def get_games(self) -> Iterable[Game]:
         async with self.session() as session:
             games = await session.scalars(
                 sa.select(GameORM)
                 .where((GameORM.player1.user_id == self.id) | 
                        (GameORM.player2.user_id == self.id))
             )
-        return [Game.get_repository(self.session, orm) for orm in games]
+        return (Game.get_repository(self.session, orm) for orm in games)
 
-    async def get_prizes(self) -> list[Prize]:
+    async def get_prizes(self) -> Iterable[Prize]:
         async with self.session() as session:
             prizes = await session.scalars(
                 sa.select(PrizeORM)
                 .where(PrizeORM.user_id == self.id)
             )
-        return [Prize.get_repository(self.session, orm) for orm in prizes]
+        return (Prize.get_repository(self.session, orm) for orm in prizes)
         
     async def join_game(self, game: GamePlayers) -> Player | None:
-        player_num = (game.player1_id, game.player2_id).find(None)
-        if player_num == -1:
+        players = [game.player1_id, game.player2_id]
+        if None not in players:
             return None
+        player_num = players.index(None)
 
         async with self.session() as session:
             async with session.begin():
                 player = PlayerORM(user_id=self.id, remaining_moves=0, used_moves=0)
-                await session.add(player)
+                session.add(player)
                 await session.flush()
 
                 stmt = sa.update(GameORM) \

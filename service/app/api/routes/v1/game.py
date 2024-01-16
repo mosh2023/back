@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 from app.models.api import GameModel, FieldModel, BoatModel, PrizeModel
-from datetime import datetime
 from typing import Optional
 
 from app.db.setup import async_session
@@ -20,23 +19,23 @@ async def get_games(user_id: int) -> list[GameModel]:
 
 @router.get('/game/{game_id}', tags=['game'])
 async def get_game(game_id: int) -> Optional[GameModel]:
-    game: Game = await Game.get(async_session, id)
+    game: Game = await Game.get(async_session, game_id)
     return game.get_model()
 
 
 @router.get('/game/fields/{game_id}')
 async def get_fields(game_id: int) -> list[FieldModel]:
-    game: Game = await Game.get(async_session, id)
+    game: Game = await Game.get(async_session, game_id)
     return [field.get_model() for field in await game.get_fields()]
 
 
 @router.get('/game/boats/{game_id}')
 async def get_boats(game_id: int) -> list[BoatModel]:
-    game: Game = await Game.get(async_session, id)
+    game: Game = await Game.get(async_session, game_id)
     return [boat.get_model() for boat in await game.get_boats()]
 
 
 @router.get('/game/prizes/{game_id}')
 async def get_prizes(game_id: int) -> list[PrizeModel]:
-    game: Game = await Game.get(async_session, id)
+    game: Game = await Game.get(async_session, game_id)
     return [prize.get_model() for prize in await game.get_prizes()]

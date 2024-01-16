@@ -1,12 +1,14 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 
 
 class BoatModel(BaseModel):
-    id: int = Field(gt=0)
+    id: Optional[int] = Field(gt=0, default=None)
     prize_id: int = Field(gt=0)
 
 
 class BoatInfo(BaseModel):
+    id: Optional[int] = Field(gt=0, default=None)
     prize_id: int = Field(gt=0)
 
 

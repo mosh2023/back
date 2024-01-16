@@ -1,14 +1,15 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 
 
 class FieldModel(BaseModel):
-    id: int = Field(gt=0)
+    id: Optional[int] = Field(gt=0, default=None)
     game_id: int = Field(gt=0)
     x: int = Field(gt=-1)
     y: int = Field(gt=-1)
     injured: bool
-    player_id: int = Field(gt=0, default=None)
-    boat_id: int = Field(gt=0, default=None)
+    player_id: Optional[int] = Field(gt=0, default=None)
+    boat_id: Optional[int] = Field(gt=0, default=None)
 
 
 class Hit(BaseModel):
