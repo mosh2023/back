@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 
-class GameModel(BaseModel):
+class GameAPIModel(BaseModel):
     id: Optional[int] = Field(gt=0, default=None)
     name: str = Field(min_length=3, max_length=50)
     description: Optional[str] = None
@@ -18,18 +18,27 @@ class GameModel(BaseModel):
     dt_start: Optional[datetime] = None
 
 
-class GameInfo(BaseModel):
+class GameModel(BaseModel):
     id: Optional[int] = Field(gt=0, default=None)
     name: str = Field(min_length=3, max_length=50)
     description: Optional[str] = None
     board_size: int = Field(gt=0)
-    key: str = Field(min_length=4, max_length=10)  # Генерируется на фронте?
+    key: str = Field(min_length=4, max_length=10)
 
     player1_id: Optional[int] = Field(gt=0, default=None)
     player2_id: Optional[int] = Field(gt=0, default=None)
     
     admin_id: int = Field(gt=0)
     dt_start: Optional[datetime] = None
+
+
+class GameInfo(BaseModel):
+    name: str = Field(min_length=3, max_length=50)
+    description: Optional[str] = None
+    board_size: int = Field(gt=0)
+    admin_id: int = Field(gt=0)
+
+    # Ключ создается в бизнес логике автоматом. Его надо возвращать.
 
 
 class GameEdit(BaseModel):

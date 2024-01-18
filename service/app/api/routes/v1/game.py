@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.models.api import GameModel, FieldModel, BoatModel, PrizeModel
+from app.models.api import GameAPIModel, FieldModel, BoatModel, PrizeModel
 from typing import Optional
 
 from app.db.setup import async_session
@@ -12,15 +12,15 @@ router = APIRouter(
 
 
 @router.get('/games/{user_id}', tags=['game'])
-async def get_games(user_id: int) -> list[GameModel]:
+async def get_games(user_id: int) -> list[GameAPIModel]:
     user: User = await User.get(async_session, user_id)
-    return [game.get_model() for game in await user.get_games()]
+    return [await game.get_api_model() for game in await user.get_games()]
 
 
 @router.get('/game/{game_id}', tags=['game'])
-async def get_game(game_id: int) -> Optional[GameModel]:
+async def get_game(game_id: int) -> Optional[GameAPIModel]:
     game: Game = await Game.get(async_session, game_id)
-    return game.get_model()
+    return await game.get_api_model()
 
 
 @router.get('/game/fields/{game_id}')

@@ -13,6 +13,8 @@ router = APIRouter(
 @router.post('/game', tags=['admin'])
 async def create_game(game: GameInfo) -> Id:
     game: Game = Game.get_repository(async_session, game)
+    # Resolve key, return `key` with Id.
+    game.key = 'ABClass'
     await game.create()
     return Id(id=game.id)
 
@@ -24,7 +26,7 @@ async def edit_game(game_edit: GameEdit):
                 game_edit.board_size)
 
 
-@router.put('/game/hit', tags=['admin'])
-async def add_shots(moves: PlayerMoves):
-    player: Player = await Player.get(moves.id)
+@router.put('/player/add_moves', tags=['admin'])
+async def add_moves(moves: PlayerMoves):
+    player: Player = await Player.get(async_session, moves.id)
     await player.add_moves(moves.moves)

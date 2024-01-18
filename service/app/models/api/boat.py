@@ -8,7 +8,6 @@ class BoatModel(BaseModel):
 
 
 class BoatInfo(BaseModel):
-    id: Optional[int] = Field(gt=0, default=None)
     prize_id: int = Field(gt=0)
 
 

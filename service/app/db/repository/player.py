@@ -28,7 +28,8 @@ class Player(BaseRepository):
 
     @classmethod
     def get_repository(cls, session: AsyncSession, orm: PlayerModel) -> Player:
-        return Player(session, orm.id, orm.user_id, 
+        id = orm.id if hasattr(orm, 'id') else None
+        return Player(session, id, orm.user_id, 
             orm.remaining_moves, orm.used_moves)
 
     @classmethod

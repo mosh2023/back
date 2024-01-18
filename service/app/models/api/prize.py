@@ -14,7 +14,6 @@ class PrizeModel(BaseModel):
 
 
 class PrizeInfo(BaseModel):
-    id: Optional[int] = Field(gt=0, default=None)
     name: str = Field(min_length=3, max_length=50)
     description: Optional[str] = None
     icon_link: Optional[str] = None

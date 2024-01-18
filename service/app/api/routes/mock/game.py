@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.models.api import GameModel, FieldModel, BoatModel, PrizeModel
+from app.models.api import GameAPIModel, FieldModel, BoatModel, PrizeModel
 from datetime import datetime
 from typing import Optional
 
@@ -10,7 +10,7 @@ router = APIRouter(
 
 
 @router.get('/games/{user_id}', tags=['game'])
-async def get_games(user_id: int) -> list[GameModel]:
+async def get_games(user_id: int) -> list[GameAPIModel]:
     if user_id != 2: return []
     return [{'id': 1,
              'name': 'TheFirstGame',
@@ -47,7 +47,7 @@ async def get_games(user_id: int) -> list[GameModel]:
 
 
 @router.get('/game/{game_id}', tags=['game'])
-async def get_game(game_id: int) -> Optional[GameModel]:
+async def get_game(game_id: int) -> Optional[GameAPIModel]:
     if game_id != 1: return None
     return {'id': 1,
              'name': 'TheFirstGame',

@@ -30,8 +30,11 @@ class Field(BaseRepository):
 
     @classmethod
     def get_repository(cls, session: AsyncSession, orm: FieldModel) -> Field:
-        return Field(session, orm.id, orm.game_id, orm.x, orm.y, 
-            orm.injured, orm.player_id, orm.boat_id)
+        id = orm.id if hasattr(orm, 'id') else None
+        player_id = orm.player_id if hasattr(orm, 'player_id') else None
+        boat_id = orm.boat_id if hasattr(orm, 'boat_id') else None
+        return Field(session, id, orm.game_id, orm.x, orm.y, 
+            orm.injured, player_id, boat_id)
 
     @classmethod
     async def get(cls, session: AsyncSession, id: int) -> Field:

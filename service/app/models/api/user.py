@@ -10,7 +10,6 @@ class UserModel(BaseModel):
 
 
 class UserInfo(BaseModel):
-    id: Optional[int] = Field(gt=0, default=None)
     auth_id: int = Field(gt=0)
     name: str = Field(min_length=3, max_length=50)
     icon_link: Optional[str] = None

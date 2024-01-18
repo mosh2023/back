@@ -22,7 +22,8 @@ class Boat(BaseRepository):
 
     @classmethod
     def get_repository(cls, session: AsyncSession, orm: BoatModel) -> Boat:
-        return Boat(session, orm.id, orm.prize_id)
+        id = orm.id if hasattr(orm, 'id') else None
+        return Boat(session, id, orm.prize_id)
     
     @classmethod
     async def get(cls, session: AsyncSession, id: int) -> Boat:

@@ -34,8 +34,13 @@ class Prize(BaseRepository):
 
     @classmethod
     def get_repository(cls, session: AsyncSession, orm: PrizeModel) -> Prize:
-        return Prize(session, orm.id, orm.name, orm.description, orm.icon_link, 
-            orm.user_id, orm.admin_id, orm.dt_won)
+        id = orm.id if hasattr(orm, 'id') else None
+        description = orm.description if hasattr(orm, 'description') else None
+        icon_link = orm.icon_link if hasattr(orm, 'icon_link') else None
+        user_id = orm.user_id if hasattr(orm, 'user_id') else None
+        dt_won = orm.dt_won if hasattr(orm, 'dt_won') else None
+        return Prize(session, id, orm.name, description, icon_link, 
+            user_id, orm.admin_id, dt_won)
 
     @classmethod
     async def get(cls, session: AsyncSession, id: int) -> Prize:

@@ -5,10 +5,11 @@ from typing import Iterable
 from datetime import datetime
 
 from . import BaseRepository
+from .player import Player
 from .field import Field
 from .boat import Boat
 from .prize import Prize
-from app.models.api import GameModel
+from app.models.api import GameModel, GameAPIModel
 from app.db.tables import GameORM, FieldORM, BoatORM, PrizeORM
 
 
@@ -40,10 +41,29 @@ class Game(BaseRepository):
             board_size=self.board_size, key=self.key, player1_id=self.player1_id, 
             player2_id=self.player2_id, admin_id=self.admin_id, dt_start=self.dt_start)
 
+    async def get_api_model(self) -> GameAPIModel:
+        if self.player1_id:
+            player1 = (await Player.get(self.session, self.player1_id)).get_model()
+        else: player1 = None
+        if self.player2_id:
+            player2 = (await Player.get(self.session, self.player2_id)).get_model()
+        else: player2 = None
+
+        return GameAPIModel(id=self.id, name=self.name, description=self.description, 
+            board_size=self.board_size, key=self.key, player1=player1, 
+            player2=player2, admin_id=self.admin_id, dt_start=self.dt_start)
+
     @classmethod
     def get_repository(cls, session: AsyncSession, orm: GameModel) -> Game:
-        return Game(session, orm.id, orm.name, orm.description, orm.board_size, 
-            orm.key, orm.player1_id, orm.player2_id, orm.admin_id, orm.dt_start)
+        id = orm.id if hasattr(orm, 'id') else None
+        description = orm.description if hasattr(orm, 'description') else None
+        key = orm.key if hasattr(orm, 'key') else None
+        # Resolve key field. With login module.
+        player1_id = orm.player1_id if hasattr(orm, 'player1_id') else None
+        player2_id = orm.player2_id if hasattr(orm, 'player2_id') else None
+        dt_start = orm.dt_start if hasattr(orm, 'dt_start') else None
+        return Game(session, id, orm.name, description, orm.board_size, 
+            key, player1_id, player2_id, orm.admin_id, dt_start)
 
     @classmethod
     async def get(cls, session: AsyncSession, id: int) -> Game:

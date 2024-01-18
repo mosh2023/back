@@ -4,7 +4,7 @@ import sqlalchemy as sa
 
 from .base import BaseRepository
 from app.db.tables.auth import AuthORM
-from app.models.db import Roles, AuthDBModel
+from app.models.api import Roles, AuthModel
 
 
 class Auth(BaseRepository):
@@ -22,12 +22,12 @@ class Auth(BaseRepository):
         return AuthORM(id=self.id, login=self.login,
             password=self.password, role=self.role)
 
-    def get_model(self) -> AuthDBModel:
-        return AuthDBModel(id=self.id, login=self.login,
+    def get_model(self) -> AuthModel:
+        return AuthModel(id=self.id, login=self.login,
             password=self.password, role=self.role)
     
     @classmethod
-    def get_repository(cls, session: AsyncSession, orm: AuthDBModel) -> Auth:
+    def get_repository(cls, session: AsyncSession, orm: AuthModel) -> Auth:
         return Auth(session, orm.id, orm.login, orm.password, orm.role)
 
     @classmethod

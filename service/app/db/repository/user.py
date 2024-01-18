@@ -14,13 +14,13 @@ from app.db.tables import UserORM, PlayerORM, PrizeORM, GameORM
 class User(BaseRepository):
     ORM = UserORM
     def __init__(self, session: AsyncSession, id: int | None, 
-            auth_id: int, name: str, icon_link: str = None):
+            auth_id: int, name: str, icon_link: str | None = None):
         super().__init__(session)
 
         self.id: int | None = id
         self.auth_id: int = auth_id
         self.name: str = name
-        self.icon_link: str = icon_link
+        self.icon_link: str | None = icon_link
 
     def _get_orm(self) -> UserORM:
         return UserORM(id=self.id, auth_id=self.auth_id, 
@@ -32,7 +32,9 @@ class User(BaseRepository):
 
     @classmethod
     def get_repository(cls, session: AsyncSession, orm: UserModel) -> User:
-        return User(session, orm.id, orm.auth_id, orm.name, orm.icon_link)
+        id = orm.id if hasattr(orm, 'id') else None
+        icon_link = orm.icon_link if hasattr(orm, 'icon_link') else None
+        return User(session, id, orm.auth_id, orm.name, icon_link)
 
     @classmethod
     async def get(cls, session: AsyncSession, id: int) -> User:
