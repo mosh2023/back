@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from app.models.api import GameAPIModel, FieldModel, BoatModel, PrizeModel
 from typing import Optional
+import asyncio
 
 from app.db.setup import async_session
 from app.db.repository import Game, User
@@ -14,7 +15,8 @@ router = APIRouter(
 @router.get('/games/{user_id}', tags=['game'])
 async def get_games(user_id: int) -> list[GameAPIModel]:
     user: User = await User.get(async_session, user_id)
-    return [await game.get_api_model() for game in await user.get_games()]
+    return await asyncio.gather(
+        *[game.get_api_model() for game in await user.get_games()])
 
 
 @router.get('/game/{game_id}', tags=['game'])

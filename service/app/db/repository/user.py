@@ -49,8 +49,8 @@ class User(BaseRepository):
         async with self.session() as session:
             games = await session.scalars(
                 sa.select(GameORM)
-                .where((GameORM.player1.user_id == self.id) | 
-                       (GameORM.player2.user_id == self.id))
+                .join(PlayerORM, sa.or_(GameORM.player1, GameORM.player2))
+                .where(PlayerORM.user_id == self.id)
             )
         return (Game.get_repository(self.session, orm) for orm in games)
 

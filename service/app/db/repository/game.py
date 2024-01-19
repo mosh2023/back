@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
 from typing import Iterable
 from datetime import datetime
+import asyncio
 
 from . import BaseRepository
 from .player import Player
@@ -40,15 +41,20 @@ class Game(BaseRepository):
         return GameModel(id=self.id, name=self.name, description=self.description, 
             board_size=self.board_size, key=self.key, player1_id=self.player1_id, 
             player2_id=self.player2_id, admin_id=self.admin_id, dt_start=self.dt_start)
+    
+    async def get_game_players(self) -> list[Player | None]:
+        if self.player1_id and self.player2_id:
+            pls = await asyncio.gather(
+                Player.get(self.session, self.player1_id), 
+                Player.get(self.session, self.player2_id))
+        elif self.player1_id: pls = [await Player.get(self.session, self.player1_id), None]
+        elif self.player2_id: pls = [None, await Player.get(self.session, self.player2_id)]
+        return pls
 
     async def get_api_model(self) -> GameAPIModel:
-        if self.player1_id:
-            player1 = (await Player.get(self.session, self.player1_id)).get_model()
-        else: player1 = None
-        if self.player2_id:
-            player2 = (await Player.get(self.session, self.player2_id)).get_model()
-        else: player2 = None
-
+        player1, player2 = await self.get_game_players()
+        if player1: player1 = player1.get_model()
+        if player2: player2 = player2.get_model()
         return GameAPIModel(id=self.id, name=self.name, description=self.description, 
             board_size=self.board_size, key=self.key, player1=player1, 
             player2=player2, admin_id=self.admin_id, dt_start=self.dt_start)
@@ -103,7 +109,8 @@ class Game(BaseRepository):
         async with self.session() as session:
             boats = await session.scalars(
                 sa.select(BoatORM)
-                .where(BoatORM.field.game_id == self.id)
+                .join(BoatORM.field)
+                .where(FieldORM.game_id == self.id)
             )
             return (Boat.get_repository(self.session, orm) for orm in boats)
         
@@ -112,7 +119,8 @@ class Game(BaseRepository):
             prizes = await session.scalars(
                 sa.select(PrizeORM)
                 .join(PrizeORM.boat)
-                .where(BoatORM.field.game_id == self.id)
+                .join(BoatORM.field)
+                .where(FieldORM.game_id == self.id)
             )
             return (Prize.get_repository(self.session, orm) for orm in prizes)
 
