@@ -6,13 +6,14 @@ import abc
 from app.common.errors import ORMObjectExistsError, ORMIdIsRequiredError, ORMNoFieldsToUpdateError
 from pydantic import BaseModel
 from app.db.tables import DBBase
+from app.db.setup import async_session
 
 
 class BaseRepository(abc.ABC):
     ORM = DBBase
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession = async_session) -> None:
+        self._session = session
         super().__init__()
-        self._session: AsyncSession = session
 
     @abc.abstractmethod
     def _get_orm(self) -> DBBase:
@@ -32,11 +33,11 @@ class BaseRepository(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def get_repository(cls, session: AsyncSession, orm: BaseModel) -> BaseRepository:
+    def get_repository(cls, orm: BaseModel, session: AsyncSession = async_session) -> BaseRepository:
         '''Factory for `Repository` row representation.'''
 
     @classmethod
-    async def get(cls, session: AsyncSession, id: int) -> BaseRepository:
+    async def get(cls, id: int, session: AsyncSession = async_session) -> BaseRepository:
         '''Select `Repository` by `id`.'''
         se = session
         async with session() as session:
@@ -45,7 +46,7 @@ class BaseRepository(abc.ABC):
             if not orm:
                 raise ORMObjectExistsError(cls.__name__, id)
 
-        return cls.get_repository(se, orm)
+        return cls.get_repository(orm, se)
     
     async def _update(self, fields: dict):
         '''Update `Repository` field. `Id` is required.'''

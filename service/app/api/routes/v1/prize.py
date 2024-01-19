@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 from app.models.api import Id, PrizeModel, PrizeInfo, PrizeEdit
 
-from app.db.setup import async_session
 from app.db.repository import User, Prize
 
 
@@ -12,13 +11,13 @@ router = APIRouter(
 
 @router.get('/prizes/{user_id}', tags=['prize'])
 async def get_prizes(user_id: int) -> list[PrizeModel]:
-    user: User = await User.get(async_session, user_id)
+    user: User = await User.get(user_id)
     return [prize.get_model() for prize in await user.get_prizes()]
 
 
 @router.post('/prizes', tags=['prize'])
 async def create_prize(prize: PrizeInfo) -> Id:
-    prize: Prize = Prize.get_repository(async_session, prize)
+    prize: Prize = Prize.get_repository(prize)
     await prize.create()
     return Id(id=prize.id)
 

@@ -5,12 +5,13 @@ import sqlalchemy as sa
 from . import BaseRepository
 from app.models.api import PlayerModel, GamePlayers
 from app.db.tables import PlayerORM, GameORM
+from app.db.setup import async_session
 
 
 class Player(BaseRepository):
     ORM = PlayerORM
-    def __init__(self, session: AsyncSession, id: int | None, 
-            user_id: int, remaining_moves: int = 0, used_moves: int = 0):
+    def __init__(self, id: int | None, user_id: int, remaining_moves: int = 0, 
+            used_moves: int = 0, session: AsyncSession = async_session):
         super().__init__(session)
 
         self.id: int | None = id
@@ -27,14 +28,14 @@ class Player(BaseRepository):
             remaining_moves=self.remaining_moves, used_moves=self.used_moves)
 
     @classmethod
-    def get_repository(cls, session: AsyncSession, orm: PlayerModel) -> Player:
+    def get_repository(cls, orm: PlayerModel, session: AsyncSession = async_session) -> Player:
         id = orm.id if hasattr(orm, 'id') else None
-        return Player(session, id, orm.user_id, 
-            orm.remaining_moves, orm.used_moves)
+        return Player(id, orm.user_id, orm.remaining_moves, 
+            orm.used_moves, session=session)
 
     @classmethod
-    async def get(cls, session: AsyncSession, id: int) -> Player:
-        return await super().get(session, id)
+    async def get(cls, id: int, session: AsyncSession = async_session) -> Player:
+        return await super().get(id, session=session)
     
     @staticmethod
     async def whose_move_is(player1: PlayerModel, player2: PlayerModel) -> PlayerModel | None:

@@ -9,12 +9,13 @@ from .game import Game
 from .prize import Prize
 from app.models.api import UserModel, GamePlayers
 from app.db.tables import UserORM, PlayerORM, PrizeORM, GameORM
+from app.db.setup import async_session
 
 
 class User(BaseRepository):
     ORM = UserORM
-    def __init__(self, session: AsyncSession, id: int | None, 
-            auth_id: int, name: str, icon_link: str | None = None):
+    def __init__(self, id: int | None, auth_id: int, name: str, 
+            icon_link: str | None = None, session: AsyncSession = async_session):
         super().__init__(session)
 
         self.id: int | None = id
@@ -31,14 +32,14 @@ class User(BaseRepository):
             name=self.name, icon_link=self.icon_link)
 
     @classmethod
-    def get_repository(cls, session: AsyncSession, orm: UserModel) -> User:
+    def get_repository(cls, orm: UserModel, session: AsyncSession = async_session) -> User:
         id = orm.id if hasattr(orm, 'id') else None
         icon_link = orm.icon_link if hasattr(orm, 'icon_link') else None
-        return User(session, id, orm.auth_id, orm.name, icon_link)
+        return User(id, orm.auth_id, orm.name, icon_link, session=session)
 
     @classmethod
-    async def get(cls, session: AsyncSession, id: int) -> User:
-        return await super().get(session, id)
+    async def get(cls, id: int, session: AsyncSession = async_session) -> User:
+        return await super().get(id, session=session)
 
     async def modify(self, name: str = None, icon_link: str = None):
         if name is not None: self.name = name
@@ -52,7 +53,7 @@ class User(BaseRepository):
                 .join(PlayerORM, sa.or_(GameORM.player1, GameORM.player2))
                 .where(PlayerORM.user_id == self.id)
             )
-        return (Game.get_repository(self.session, orm) for orm in games)
+        return (Game.get_repository(orm, self.session) for orm in games)
 
     async def get_prizes(self) -> Iterable[Prize]:
         async with self.session() as session:
@@ -60,7 +61,7 @@ class User(BaseRepository):
                 sa.select(PrizeORM)
                 .where(PrizeORM.user_id == self.id)
             )
-        return (Prize.get_repository(self.session, orm) for orm in prizes)
+        return (Prize.get_repository(orm, self.session) for orm in prizes)
         
     async def join_game(self, game: GamePlayers) -> Player | None:
         players = [game.player1_id, game.player2_id]
@@ -79,7 +80,7 @@ class User(BaseRepository):
                     .values({f'player{player_num + 1}_id': player.id})
                 await session.execute(stmt)
 
-        return Player.get_repository(self.session, player)
+        return Player.get_repository(player, self.session)
 
     def __repr__(self) -> str:
         return f'User(id={self.id}, auth_id={self.auth_id}, name="{self.name}", icon_link=...)'

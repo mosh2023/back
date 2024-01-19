@@ -4,12 +4,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from . import BaseRepository
 from app.models.api import FieldModel
 from app.db.tables import FieldORM
+from app.db.setup import async_session
 
 
 class Field(BaseRepository):
     ORM = FieldORM
-    def __init__(self, session: AsyncSession, id: int | None, game_id: int, 
-            x: int, y: int, injured: bool, player_id: int | None = None, boat_id: int | None = None):
+    def __init__(self, id: int | None, game_id: int, x: int, y: int, injured: bool, 
+            player_id: int | None = None, boat_id: int | None = None, session: AsyncSession = async_session):
         super().__init__(session)
 
         self.id: int | None = id
@@ -29,16 +30,16 @@ class Field(BaseRepository):
             injured=self.injured, player_id=self.player_id, boat_id=self.boat_id)
 
     @classmethod
-    def get_repository(cls, session: AsyncSession, orm: FieldModel) -> Field:
+    def get_repository(cls, orm: FieldModel, session: AsyncSession = async_session) -> Field:
         id = orm.id if hasattr(orm, 'id') else None
         player_id = orm.player_id if hasattr(orm, 'player_id') else None
         boat_id = orm.boat_id if hasattr(orm, 'boat_id') else None
-        return Field(session, id, orm.game_id, orm.x, orm.y, 
-            orm.injured, player_id, boat_id)
+        return Field(id, orm.game_id, orm.x, orm.y, orm.injured, 
+            player_id, boat_id, session=session)
 
     @classmethod
-    async def get(cls, session: AsyncSession, id: int) -> Field:
-        return await super().get(session, id)
+    async def get(cls, id: int, session: AsyncSession = async_session) -> Field:
+        return await super().get(id, session=session)
 
     # Тут надо продумать, может обернуть в classmethod. + автосоздание
     def hit(self, player_id: int):

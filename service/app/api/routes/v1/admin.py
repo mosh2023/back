@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 
-from app.db.setup import async_session
 from app.models.api import Id, GameInfo, GameEdit, PlayerMoves
 from app.db.repository import Game, Player
 
@@ -12,7 +11,7 @@ router = APIRouter(
 
 @router.post('/game', tags=['admin'])
 async def create_game(game: GameInfo) -> Id:
-    game: Game = Game.get_repository(async_session, game)
+    game: Game = Game.get_repository(game)
     # Resolve key, return `key` with Id.
     game.key = 'ABClass'
     await game.create()
@@ -21,12 +20,12 @@ async def create_game(game: GameInfo) -> Id:
 
 @router.put('/game', tags=['admin'])
 async def edit_game(game_edit: GameEdit):
-    game: Game = await Game.get(async_session, game_edit.id)
+    game: Game = await Game.get(game_edit.id)
     await game.modify(game_edit.name, game_edit.description, 
                 game_edit.board_size)
 
 
 @router.put('/player/add_moves', tags=['admin'])
 async def add_moves(moves: PlayerMoves):
-    player: Player = await Player.get(async_session, moves.id)
+    player: Player = await Player.get(moves.id)
     await player.add_moves(moves.moves)

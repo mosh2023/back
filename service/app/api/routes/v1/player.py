@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from app.db.setup import async_session
+
 from app.models.api import GameKey, Hit, PlayerModel
 from app.db.repository import User, Player, Game
 
@@ -12,10 +12,10 @@ router = APIRouter(
 
 @router.put('/player/join')
 async def join_game(key: GameKey) -> PlayerModel:
-    game: Game = await Game.get_by_key(async_session, key.key)
+    game: Game = await Game.get_by_key(key.key)
     if not game:
         raise HTTPException(404, f'Game with key="{key.key}" does not found.')
-    user: User = await User.get(async_session, key.user_id)
+    user: User = await User.get(key.user_id)
     player: Player = await user.join_game(game)
     
     if not player:

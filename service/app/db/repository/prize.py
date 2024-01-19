@@ -1,17 +1,18 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime
 
 from . import BaseRepository
 from app.models.api import PrizeModel
 from app.db.tables import PrizeORM
-from datetime import datetime
+from app.db.setup import async_session
 
 
 class Prize(BaseRepository):
     ORM = PrizeORM
-    def __init__(self, session: AsyncSession, id: int | None, 
-            name: str, description: str | None, icon_link: str | None,
-            user_id: int | None, admin_id: int, dt_won: datetime | None):
+    def __init__(self, id: int | None, name: str, description: str | None, 
+            icon_link: str | None, user_id: int | None, admin_id: int, 
+            dt_won: datetime | None, session: AsyncSession = async_session):
         super().__init__(session)
 
         self.id: int | None = id
@@ -33,18 +34,18 @@ class Prize(BaseRepository):
             dt_won=self.dt_won)
 
     @classmethod
-    def get_repository(cls, session: AsyncSession, orm: PrizeModel) -> Prize:
+    def get_repository(cls, orm: PrizeModel, session: AsyncSession = async_session) -> Prize:
         id = orm.id if hasattr(orm, 'id') else None
         description = orm.description if hasattr(orm, 'description') else None
         icon_link = orm.icon_link if hasattr(orm, 'icon_link') else None
         user_id = orm.user_id if hasattr(orm, 'user_id') else None
         dt_won = orm.dt_won if hasattr(orm, 'dt_won') else None
-        return Prize(session, id, orm.name, description, icon_link, 
-            user_id, orm.admin_id, dt_won)
+        return Prize(id, orm.name, description, icon_link, 
+            user_id, orm.admin_id, dt_won, session=session)
 
     @classmethod
-    async def get(cls, session: AsyncSession, id: int) -> Prize:
-        return await super().get(session, id)
+    async def get(cls, id: int, session: AsyncSession = async_session) -> Prize:
+        return await super().get(id, session=session)
     
     async def modify(self, name: str = None, description: str = None, icon_link: str = None):
         if name is not None: self.name = name
