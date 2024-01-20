@@ -1,7 +1,8 @@
-from fastapi import APIRouter
-from app.models.api import Id, PrizeModel, PrizeInfo, PrizeEdit
+from fastapi import APIRouter, HTTPException
 
+from app.models.api import Id, PrizeModel, PrizeInfo, PrizeEdit
 from app.db.repository import User, Prize
+from app.common.errors.db import ORMUniqueFieldError
 
 
 router = APIRouter(
@@ -18,7 +19,10 @@ async def get_prizes(user_id: int) -> list[PrizeModel]:
 @router.post('/prizes', tags=['prize'])
 async def create_prize(prize: PrizeInfo) -> Id:
     prize: Prize = Prize.get_repository(prize)
-    await prize.create()
+    try:
+        await prize.create()
+    except ORMUniqueFieldError:
+        raise HTTPException(400, 'One of the model fields does not match the uniqueness property.')
     return Id(id=prize.id)
 
 

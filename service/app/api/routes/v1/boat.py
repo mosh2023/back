@@ -1,7 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from app.models.api import Id, BoatInfo, BoatPlace
 from app.db.repository import Boat, Field
+from app.common.errors.db import ORMUniqueFieldError
 
 
 router = APIRouter(
@@ -12,7 +13,10 @@ router = APIRouter(
 @router.post('/game/boats', tags=['boat'])
 async def create_boat(boat: BoatInfo) -> Id:
     boat: Boat = Boat.get_repository(boat)
-    await boat.create()
+    try:
+        await boat.create()
+    except ORMUniqueFieldError:
+        raise HTTPException(400, 'One of the model fields does not match the uniqueness property.')
     return Id(id=boat.id)
 
 

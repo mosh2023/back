@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from app.models.api import Id, UserModel, UserInfo, UserEdit
-from app.common.errors import ORMObjectNoFoundError
+from app.common.errors import ORMObjectNoFoundError, ORMUniqueFieldError
 from app.db.repository import User
 
 
@@ -23,7 +23,10 @@ async def get_profile(user_id: int) -> UserModel:
 @router.post('/user', tags=['user'])
 async def create_user(user: UserInfo) -> Id:
     user: User = User.get_repository(user)
-    await user.create()
+    try:
+        await user.create()
+    except ORMUniqueFieldError:
+        raise HTTPException(400, 'One of the model fields does not match the uniqueness property.')
     return Id(id=user.id)
 
 
