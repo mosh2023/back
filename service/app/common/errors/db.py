@@ -1,8 +1,15 @@
-class ORMObjectExistsError(BaseException):
+class ORMObjectNoFoundError(BaseException):
     '''ORM object with specified `id` does not exist.'''
     def __init__(self, cls: str, id: int, *args: object) -> None:
         '''ORM object with specified `id` does not exist.'''
         super().__init__(f'{cls} with id={id} does not exist.', *args)
+
+
+class ORMUniqueFieldError(BaseException):
+    '''One of the fields does not match the uniqueness property.'''
+    def __init__(self, orm, *args: object) -> None:
+        '''One of the fields does not match the uniqueness property.'''
+        super().__init__(f'One of the fields of {orm} does not match the uniqueness property.', *args)
 
 
 class ORMIdIsRequiredError(BaseException):

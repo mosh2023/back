@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 
-from app.models.api import GameKey, Hit, PlayerModel
+from app.models.api import Id, GameKey, Hit, PlayerModel
 from app.db.repository import User, Player, Game
 
 
@@ -19,14 +19,15 @@ async def join_game(key: GameKey) -> PlayerModel:
     player: Player = await user.join_game(game)
     
     if not player:
-        raise HTTPException(400, 'You can not join this game. It already has have 2 players.')
+        raise HTTPException(400, 'You can not join this game. There are 2 players in the game or you have already joined it.')
     return player.get_model()
 
 
 @router.put('/player/leave')
-async def leave_game(p):
-    ...
-    
+async def leave_game(player_id: Id):
+    player = await Player.get(player_id.id)
+    await player.leave_game()
+
 
 @router.put('/game/hit', tags=['player'])
 async def hit(hit: Hit):

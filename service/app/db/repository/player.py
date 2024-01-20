@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
 
 from . import BaseRepository
-from app.models.api import PlayerModel, GamePlayers
+from app.models.api import PlayerModel
 from app.db.tables import PlayerORM, GameORM
 from app.db.setup import async_session
 
@@ -57,18 +57,22 @@ class Player(BaseRepository):
                 
                 await session.execute(stmt)
 
-    async def leave_game(self, game: GamePlayers):
-        players = [game.player1_id, game.player2_id]
-        if None not in players:
-            return None
-        player_num = players.index(None)
-        pl = f'player{player_num + 1}_id'
-
+    async def leave_game(self):
         async with self.session() as session:
             async with session.begin():
                 stmt = sa.update(GameORM) \
-                    .where(getattr(GameORM, pl) == self.id) \
-                    .values({pl: None})
+                    .where((GameORM.player1_id == self.id) | 
+                           (GameORM.player2_id == self.id)) \
+                    .values(
+                        player1_id=sa.case(
+                            (GameORM.player1_id == self.id, None),
+                            else_=GameORM.player1_id
+                        ),
+                        player2_id=sa.case(
+                            (GameORM.player2_id == self.id, None),
+                            else_=GameORM.player2_id
+                        )
+                    )
 
                 await session.execute(stmt)
 

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from app.models.api import Id, UserModel, UserInfo, UserEdit
-from app.common.errors import ORMObjectExistsError
+from app.common.errors import ORMObjectNoFoundError
 from app.db.repository import User
 
 
@@ -15,7 +15,7 @@ async def get_profile(user_id: int) -> UserModel:
     try:
         user: User = await User.get(user_id)
         return user.get_model()
-    except ORMObjectExistsError:
+    except ORMObjectNoFoundError:
         raise HTTPException(404, f'User with id={user_id} does not exist.')
 
 

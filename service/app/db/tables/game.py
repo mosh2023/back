@@ -20,8 +20,8 @@ class GameORM(DBBase):
     dt_start = sa.Column('dt_start', sa.TIMESTAMP())
 
     fields = orm.relationship('FieldORM', back_populates='game')
-    player1 = orm.relationship('PlayerORM', back_populates='games1', foreign_keys=[player1_id])
-    player2 = orm.relationship('PlayerORM', back_populates='games2', foreign_keys=[player2_id])    
+    player1 = orm.relationship('PlayerORM', back_populates='game1', foreign_keys=[player1_id])
+    player2 = orm.relationship('PlayerORM', back_populates='game2', foreign_keys=[player2_id])    
     admin = orm.relationship('UserORM', back_populates='admin_games', foreign_keys=[admin_id])
 
     def __repr__(self) -> str:

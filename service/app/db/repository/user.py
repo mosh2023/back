@@ -7,7 +7,7 @@ from . import BaseRepository
 from .player import Player
 from .game import Game
 from .prize import Prize
-from app.models.api import UserModel, GamePlayers
+from app.models.api import UserModel, Id
 from app.db.tables import UserORM, PlayerORM, PrizeORM, GameORM
 from app.db.setup import async_session
 
@@ -62,25 +62,44 @@ class User(BaseRepository):
                 .where(PrizeORM.user_id == self.id)
             )
         return (Prize.get_repository(orm, self.session) for orm in prizes)
-        
-    async def join_game(self, game: GamePlayers) -> Player | None:
-        players = [game.player1_id, game.player2_id]
-        if None not in players:
-            return None
-        player_num = players.index(None)
-
-        async with self.session() as session:
+    
+    async def join_game(self, game: Id) -> Player | None:
+        async with self.session() as session:    
             async with session.begin():
+                user_ids = await session.scalars(sa.select(PlayerORM.user_id) \
+                    .join(GameORM, sa.or_(PlayerORM.game1, PlayerORM.game2)) \
+                    .where(GameORM.id == game.id))
+            
+                if self.id in user_ids:
+                    await session.close()
+                    return None
+                
                 player = PlayerORM(user_id=self.id, remaining_moves=0, used_moves=0)
                 session.add(player)
                 await session.flush()
 
                 stmt = sa.update(GameORM) \
                     .where(GameORM.id == game.id) \
-                    .values({f'player{player_num + 1}_id': player.id})
+                    .values(
+                        player1_id=sa.case((
+                                GameORM.player1_id.is_(None), player.id),
+                            else_=GameORM.player1_id
+                        ),
+                        player2_id=sa.case((
+                            sa.and_(
+                                GameORM.player1_id.is_not(None), 
+                                GameORM.player2_id.is_(None)
+                            ), player.id),
+                            else_=GameORM.player2_id
+                        )
+                    )
                 await session.execute(stmt)
 
-        return Player.get_repository(player, self.session)
+        game: Game = await Game.get(game.id, session=self.session)
+
+        if player.id == game.player1_id or player.id == game.player2_id:
+            return Player.get_repository(player, self.session)
+        return None
 
     def __repr__(self) -> str:
         return f'User(id={self.id}, auth_id={self.auth_id}, name="{self.name}", icon_link=...)'

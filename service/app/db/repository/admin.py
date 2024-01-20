@@ -13,7 +13,7 @@ from app.db.setup import async_session
 
 class Admin(User):
     @classmethod
-    def get_repository(cls, orm: UserModel, session: AsyncSession = async_session) -> User:
+    def get_repository(cls, orm: UserModel, session: AsyncSession = async_session) -> Admin:
         id = orm.id if hasattr(orm, 'id') else None
         icon_link = orm.icon_link if hasattr(orm, 'icon_link') else None
         return Admin(id, orm.auth_id, orm.name, icon_link, session=session)

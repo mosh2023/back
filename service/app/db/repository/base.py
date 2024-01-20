@@ -1,9 +1,11 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
 import sqlalchemy as sa
 import abc
 
-from app.common.errors import ORMObjectExistsError, ORMIdIsRequiredError, ORMNoFieldsToUpdateError
+from app.common.errors import ORMObjectNoFoundError, ORMIdIsRequiredError, \
+    ORMNoFieldsToUpdateError, ORMUniqueFieldError
 from pydantic import BaseModel
 from app.db.tables import DBBase
 from app.db.setup import async_session
@@ -26,10 +28,13 @@ class BaseRepository(abc.ABC):
     async def create(self) -> None:
         '''Insert new `Repository` to database.'''
         orm = self._get_orm()
-        async with self.session() as session:
-            async with session.begin():
-                session.add(orm)
-        self.id = orm.id
+        try:
+            async with self.session() as session:
+                async with session.begin():
+                    session.add(orm)
+            self.id = orm.id
+        except IntegrityError:
+            raise ORMUniqueFieldError(orm)
 
     @classmethod
     @abc.abstractmethod
@@ -44,7 +49,7 @@ class BaseRepository(abc.ABC):
             orm = await session.get(cls.ORM, id)
 
             if not orm:
-                raise ORMObjectExistsError(cls.__name__, id)
+                raise ORMObjectNoFoundError(cls.__name__, id)
 
         return cls.get_repository(orm, se)
     

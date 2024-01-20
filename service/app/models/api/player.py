@@ -12,9 +12,3 @@ class PlayerModel(BaseModel):
 class PlayerMoves(BaseModel):
     id: int = Field(gt=0)
     moves: int = Field(gt=0)
-
-
-class GamePlayers(BaseModel):
-    id: int = Field(gt=0)
-    player1_id: Optional[int] = Field(gt=0, default=None)
-    player2_id: Optional[int] = Field(gt=0, default=None)

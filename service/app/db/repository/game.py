@@ -43,6 +43,7 @@ class Game(BaseRepository):
             player2_id=self.player2_id, admin_id=self.admin_id, dt_start=self.dt_start)
     
     async def get_game_players(self) -> list[Player | None]:
+        pls = [None, None]
         if self.player1_id and self.player2_id:
             pls = await asyncio.gather(
                 Player.get(self.player1_id, self.session), 
