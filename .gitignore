@@ -10,3 +10,4 @@ venv
 .coverage
 /service/dockerfiles/
 /dockerfiles/
+qodana.yaml

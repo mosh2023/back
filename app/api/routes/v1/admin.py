@@ -4,7 +4,6 @@ from app.models.api import Id, GameInfo, GameEdit, PlayerMoves
 from app.db.repository import Game, Player
 from app.common.errors.db import ORMUniqueFieldError
 
-
 router = APIRouter(
     prefix="/v1", tags=['admin']
 )
@@ -25,8 +24,8 @@ async def create_game(game: GameInfo) -> Id:
 @router.put('/game')
 async def edit_game(game_edit: GameEdit):
     game: Game = await Game.get(game_edit.id)
-    await game.modify(game_edit.name, game_edit.description, 
-                game_edit.board_size)
+    await game.modify(game_edit.name, game_edit.description,
+                      game_edit.board_size)
 
 
 @router.put('/player/add_moves')

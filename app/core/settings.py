@@ -29,6 +29,10 @@ class AppSettings(BaseSettings):
 
     # MINIO_URL: str = f'http://{MINIO_HOST}:{MINIO_PORT}' if not MINIO_SECURE else f'https://{MINIO_HOST}:{MINIO_PORT}'
 
+    SECRET_KEY: str = env.get('SECRET_KEY')
+    ALGORITHM: str = env.get('ALGORITHM')
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = env.get('ACCESS_TOKEN_EXPIRE_MINUTES')
+
 
 @lru_cache()
 def get_app_settings() -> AppSettings:
