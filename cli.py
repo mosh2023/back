@@ -1,11 +1,8 @@
 from enum import Enum
-
 import platform
 import subprocess
 import time
-
 import typer as typer
-
 
 app = typer.Typer()
 
@@ -19,12 +16,14 @@ class ProcessManager(str, Enum):
 def dummy_command():
     pass
 
+
 @app.command()
 def game(
-    manager: ProcessManager = ProcessManager.uvicorn,
-    port: int = 5002,
-    host: str = "127.0.0.1",
-    workers: int = 1,
+        manager: ProcessManager = ProcessManager.uvicorn,
+        port: int = 5002,
+        host: str = "127.0.0.1",
+        workers: int = 1,
+        reload: bool = False  # Добавлен новый параметр для перезагрузки
 ):
     if platform.system() == "Windows" or manager == ProcessManager.uvicorn:
         run_args = [
@@ -37,6 +36,8 @@ def game(
             "--workers",
             f"{workers}",
         ]
+        if reload:  # Добавляем --reload если это требуется
+            run_args.append("--reload")
         proc = subprocess.Popen(run_args, stdout=None, stderr=subprocess.STDOUT)
 
         while proc.poll() is None:
