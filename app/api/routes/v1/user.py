@@ -4,7 +4,6 @@ from app.models.api import Id, UserModel, UserInfo, UserEdit
 from app.common.errors import ORMObjectNoFoundError, ORMUniqueFieldError
 from app.db.repository import User
 
-
 router = APIRouter(
     prefix="/v1", tags=['user']
 )
@@ -37,5 +36,3 @@ async def edit_user(fields: UserEdit):
     user: User = await User.get(fields.id)
     await user.modify(fields.name, fields.icon_link)
     print(user.icon_link)
-
-

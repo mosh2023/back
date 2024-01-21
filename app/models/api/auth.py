@@ -4,8 +4,8 @@ import enum
 
 
 class Roles(enum.Enum):
-    user = 1
-    admin = 2
+    user = "user"
+    admin = "admin"
 
 
 class Token(BaseModel):
@@ -19,22 +19,34 @@ class AuthModel(BaseModel):
     password: str = Field(min_length=8, max_length=128)
     role: Roles
 
+    class Config:
+        use_enum_values = True
+
 
 class AuthInfo(BaseModel):
-    login: str = Field(..., example="user123", description="Логин пользователя")
-    password: str = Field(..., example="strongpassword", description="Пароль пользователя")
-    role: str = Field(..., example="user", description="Роль пользователя")
+    login: str = Field(min_length=3, max_length=50, example="user123", description="Логин пользователя")
+    password: str = Field(min_length=8, max_length=128, example="strongpassword", description="Пароль пользователя")
+    role: Roles
+
+    class Config:
+        use_enum_values = True
 
 
 class AuthRequest(BaseModel):
-    login: str = Field(..., example="user123", description="Логин пользователя")
-    password: str = Field(..., example="strongpassword", description="Пароль пользователя")
+    login: str = Field(min_length=3, max_length=50, example="user123", description="Логин пользователя")
+    password: str = Field(min_length=8, max_length=128, example="strongpassword", description="Пароль пользователя")
+
+    class Config:
+        use_enum_values = True
 
 
 class AuthResponse(BaseModel):
-    id: int = Field(..., example=1, description="ID пользователя")
-    login: str = Field(..., example="user123", description="Логин пользователя")
-    role: str = Field(..., example="user", description="Роль пользователя")
+    id: int = Field(min_length=3, max_length=50, example=1, description="ID пользователя")
+    login: str = Field(min_length=8, max_length=128, example="user123", description="Логин пользователя")
+    role: Roles
+
+    class Config:
+        use_enum_values = True
 
     class Config:
         from_attributes = True
