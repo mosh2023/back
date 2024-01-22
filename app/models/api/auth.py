@@ -47,6 +47,4 @@ class AuthResponse(BaseModel):
 
     class Config:
         use_enum_values = True
-
-    class Config:
         from_attributes = True

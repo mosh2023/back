@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 
-from app.models.api import Id, UserModel, UserInfo, UserEdit
 from app.common.errors import ORMObjectNoFoundError, ORMUniqueFieldError
 from app.db.repository import User
+from app.models.api import Id, UserModel, UserInfo, UserEdit
 
 router = APIRouter(
     prefix="/v1", tags=['user']

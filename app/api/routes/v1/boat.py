@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
-from app.models.api import Id, BoatInfo, BoatPlace
+from app.api.dependencies import require_admin
+from app.models.api import Id, BoatInfo, BoatPlace, AuthResponse
 from app.db.repository import Boat, Field
 from app.common.errors.db import ORMUniqueFieldError
 
@@ -11,7 +12,7 @@ router = APIRouter(
 
 
 @router.post('/game/boats')
-async def create_boat(boat: BoatInfo) -> Id:
+async def create_boat(boat: BoatInfo, auth: AuthResponse = Depends(require_admin)) -> Id:
     boat: Boat = Boat.get_repository(boat)
     try:
         await boat.create()
@@ -21,7 +22,7 @@ async def create_boat(boat: BoatInfo) -> Id:
 
 
 @router.put('/game/boats')
-async def place_boat(boat_place: BoatPlace):
+async def place_boat(boat_place: BoatPlace, auth: AuthResponse = Depends(require_admin)):
     field: Field = Field(None, boat_place.game_id, 
         boat_place.x, boat_place.y, None, boat_place.id)
     await field.create()
