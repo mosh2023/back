@@ -1,5 +1,6 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
+import sqlalchemy as sa
 
 from . import BaseRepository
 from app.models.api import FieldModel
@@ -40,13 +41,21 @@ class Field(BaseRepository):
     @classmethod
     async def get(cls, id: int, session: AsyncSession = async_session) -> Field:
         return await super().get(id, session=session)
-
-    # Тут надо продумать, может обернуть в classmethod. + автосоздание
-    def hit(self, player_id: int):
-        self.injured = True
-        self.player_id = player_id
-        self._update({'injured': True,
-                      'player_id': player_id})
+    
+    @classmethod
+    async def get_by_xy(cls, game_id: int, x: int, y: int, 
+            session: AsyncSession = async_session) -> Field:
+        async with session() as session:
+            field = await session.scalar(
+                sa.select(FieldORM)
+                .where(sa.and_(
+                    FieldORM.game_id == game_id,
+                    FieldORM.x == x,
+                    FieldORM.y == y
+                ))
+            )
+        if not field: return None
+        return Field.get_repository(field, session)
 
     def __repr__(self) -> str:
         return f'Field(id={self.id}, game_id={self.game_id}, x={self.x}, y={self.y},' \

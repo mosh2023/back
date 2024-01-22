@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 
 
-from app.models.api import Id, GameKey, Hit, PlayerModel
-from app.db.repository import User, Player, Game
+from app.models.api import Id, GameKey, Hit, PlayerModel, FieldModel
+from app.db.repository import User, Player, Game, Field
 
 
 router = APIRouter(
@@ -30,5 +30,34 @@ async def leave_game(player_id: Id):
 
 
 @router.put('/game/hit', tags=['player'])
-async def hit(hit: Hit):
-    ...
+async def hit(hit: Hit) -> FieldModel:
+    field = await Field.get_by_xy(hit.game_id, hit.x, hit.y)
+
+    if field is None:
+        field = Field(id=None, game_id=hit.game_id, 
+            x=hit.x, y=hit.y, injured=False)
+        await field.create()
+    elif field.injured:
+        raise HTTPException(400, 'You can not hit the same field multiple times.')
+    
+    game = await Game.get(hit.game_id)
+
+    if game.player1_id and game.player2_id:
+        player1 = await Player.get(game.player1_id)
+        player2 = await Player.get(game.player2_id)
+
+        player = Player.whose_move_is(player1, player2)
+        if not player or player.id != hit.player_id:
+            raise HTTPException(400, 'You can not hit the fields now. Maybe there is not your turn.')
+    elif game.player1_id == hit.player_id:
+        player = await Player.get(game.player1_id)
+    elif game.player2_id == hit.player_id:
+        player = await Player.get(game.player2_id)
+    else: 
+        raise HTTPException(400, 'You do not have enough moves to hit the fields.')
+
+    await player.hit(field)
+    return field.get_model()
+    # For checking boat/prize in this field.
+    # Maybe return a whole field-boat-prize objects with prize?
+

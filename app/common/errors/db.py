@@ -12,6 +12,13 @@ class ORMUniqueFieldError(BaseException):
         super().__init__(f'One of the fields of {orm} does not match the uniqueness property.', *args)
 
 
+class ORMNotEnoughMovesToHit(BaseException):
+    '''The count of remaining moves is 0, so you can not hit the fields.'''
+    def __init__(self, *args: object) -> None:
+        '''The count of remaining moves is 0, so you can not hit the fields.'''
+        super().__init__('''The count of remaining moves is 0, so you can not hit the fields.''', *args)
+
+
 class ORMIdIsRequiredError(BaseException):
     '''For executing certain operation value of `id` field is required.'''
     def __init__(self, *args: object) -> None:
