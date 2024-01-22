@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 
-from app.models.api import Id, GameKey, Hit, PlayerModel, FieldModel, FullFieldModel
+from app.models.api import Id, GameKey, Hit, PlayerModel, FullFieldModel
 from app.db.repository import User, Player, Game, Field, Boat, Prize
 
 

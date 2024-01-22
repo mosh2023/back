@@ -28,6 +28,7 @@ async def create_user(user: UserInfo) -> Id:
     return Id(id=user.id)
 
 
+@router.put('/user')
 async def edit_user(fields: UserEdit):
     user: User = await User.get(fields.id)
     await user.modify(fields.name, fields.icon_link)
