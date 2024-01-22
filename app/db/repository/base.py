@@ -5,7 +5,7 @@ import sqlalchemy as sa
 import abc
 
 from app.common.errors import ORMObjectNoFoundError, ORMIdIsRequiredError, \
-    ORMNoFieldsToUpdateError, ORMUniqueFieldError
+    ORMNoFieldsToUpdateError, ORMUniqueFieldError, ORMRelationError
 from pydantic import BaseModel
 from app.db.tables import DBBase
 from app.db.setup import async_session
@@ -36,6 +36,17 @@ class BaseRepository(abc.ABC):
             self.id = orm.id
         except IntegrityError:
             raise ORMUniqueFieldError(orm)
+        
+    async def delete(self) -> None:
+        '''Deletes `ORM` representation of this `Repository`.'''
+        orm = self._get_orm()
+        try:
+            async with self.session as session:
+                async with session.begin():
+                    session.delete(orm)
+            self.id = None
+        except IntegrityError:
+            raise ORMRelationError(orm)
 
     @classmethod
     @abc.abstractmethod

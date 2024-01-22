@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.models.api import Id, PrizeModel, PrizeInfo, PrizeEdit
 from app.db.repository import User, Prize
-from app.common.errors.db import ORMUniqueFieldError
+from app.common.errors.db import ORMUniqueFieldError, ORMRelationError
 
 
 router = APIRouter(
@@ -35,5 +35,8 @@ async def edit_prize(prize_edit: PrizeEdit):
 
 @router.delete('/prizes')
 async def delete_prize(prize_id: Id):
-    ...
-
+    prize: Prize = await Prize.get(prize_id)
+    try:
+        await prize.delete()
+    except ORMRelationError:
+        raise HTTPException(400, f'You can not delete {prize} because of relation to another table.')
