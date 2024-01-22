@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 
 
-from app.models.api import Id, GameKey, Hit, PlayerModel, FieldModel
-from app.db.repository import User, Player, Game, Field
+from app.models.api import Id, GameKey, Hit, PlayerModel, FieldModel, FullFieldModel
+from app.db.repository import User, Player, Game, Field, Boat, Prize
 
 
 router = APIRouter(
@@ -30,7 +30,7 @@ async def leave_game(player_id: Id):
 
 
 @router.put('/game/hit', tags=['player'])
-async def hit(hit: Hit) -> FieldModel:
+async def hit(hit: Hit) -> FullFieldModel:
     field = await Field.get_by_xy(hit.game_id, hit.x, hit.y)
 
     if field is None:
@@ -57,7 +57,19 @@ async def hit(hit: Hit) -> FieldModel:
         raise HTTPException(400, 'You do not have enough moves to hit the fields.')
 
     await player.hit(field)
-    return field.get_model()
-    # For checking boat/prize in this field.
-    # Maybe return a whole field-boat-prize objects with prize?
+
+    field_model, boat_model, prize_model = field.get_model(), None, None
+    if field.boat_id:
+        boat: Boat = await Boat.get(field.boat_id)
+        prize: Prize = await Prize.get(boat.prize_id)
+        await prize.set_winner(player.user_id)
+        boat_model = boat.get_model()
+        prize_model = prize.get_model()
+
+    result = FullFieldModel(
+        field=field_model,
+        boat=boat_model,
+        prize=prize_model
+    )
+    return result
 

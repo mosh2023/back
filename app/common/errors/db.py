@@ -12,7 +12,14 @@ class ORMUniqueFieldError(BaseException):
         super().__init__(f'One of the fields of {orm} does not match the uniqueness property.', *args)
 
 
-class ORMNotEnoughMovesToHit(BaseException):
+class ORMRelationError(BaseException):
+    '''You can not delete this `orm` entity because of relation to another table.'''
+    def __init__(self, orm, *args: object) -> None:
+        '''You can not delete this `orm` entity because of relation to another table.'''
+        super().__init__(f'''You can not delete {orm} because of relation to another table.''', *args)
+
+
+class ORMNotEnoughMovesToHitError(BaseException):
     '''The count of remaining moves is 0, so you can not hit the fields.'''
     def __init__(self, *args: object) -> None:
         '''The count of remaining moves is 0, so you can not hit the fields.'''

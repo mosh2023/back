@@ -4,7 +4,8 @@ import sqlalchemy as sa
 
 from . import BaseRepository
 from app.models.api import FieldModel
-from app.db.tables import FieldORM
+from app.db.tables import FieldORM, BoatORM, PrizeORM
+from .prize import Prize
 from app.db.setup import async_session
 
 
@@ -56,7 +57,15 @@ class Field(BaseRepository):
             )
         if not field: return None
         return Field.get_repository(field, session)
+    
+    async def set_boat(self, boat_id: int):
+        self.boat_id = boat_id
+        await self._update({'boat_id': boat_id})
 
+    async def remove_boat(self):
+        self.boat_id = None
+        await self._update({'boat_id': None})
+        
     def __repr__(self) -> str:
         return f'Field(id={self.id}, game_id={self.game_id}, x={self.x}, y={self.y},' \
             f'injured={self.injured}, player_id={self.player_id}, boat_id={self.boat_id})'

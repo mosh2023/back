@@ -6,7 +6,7 @@ from . import BaseRepository
 from .field import Field
 from app.models.api import PlayerModel
 from app.db.tables import PlayerORM, GameORM, FieldORM
-from app.common.errors.db import ORMNotEnoughMovesToHit
+from app.common.errors.db import ORMNotEnoughMovesToHitError
 from app.db.setup import async_session
 
 
@@ -61,7 +61,7 @@ class Player(BaseRepository):
 
     async def hit(self, field: Field):
         if not self.remaining_moves:
-            raise ORMNotEnoughMovesToHit()
+            raise ORMNotEnoughMovesToHitError()
 
         async with self.session() as session:
             async with session.begin():
