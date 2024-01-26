@@ -5,7 +5,7 @@
 1. Add files .env
 
 ## Mock
-1. Dependency installation`pip install -r requirements.dev.txt`
+1. Dependency installation`pip install -r requirements.txt`
 2. Start a web server: `python cli.py game`
 3. Start a dev web server: `python cli.py game --reload`
 ## API with database 
