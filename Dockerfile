@@ -9,4 +9,4 @@ COPY requirements.txt /usr/app/requirements.txt
 
 RUN pip install -r /usr/app/requirements.txt
 
-COPY service .
+COPY mosh2023 .

@@ -15,4 +15,7 @@ docker-compose.yaml
 game_service/scripts/**
 
 README.md
-nginx.conf
+nginx.conf/tests/
+/.flake8
+/readme.md
+/.env.example
