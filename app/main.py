@@ -40,8 +40,8 @@ def get_application() -> FastAPI:
     #     dependencies=[Depends(log_service_request_dependency)],
     # )
 
-    # for router in mock_routers:
-    #     app.include_router(router)
+    for router in mock_routers:
+        app.include_router(router)
 
     for router in v1_routers:
         app.include_router(router)
