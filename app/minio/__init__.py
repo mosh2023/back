@@ -1,3 +1,3 @@
-# from .base import BaseMinio
-# from .user import UserMinio
-# from .prize import PrizeMinio
+from .base import BaseMinio
+from .other import UserMinio
+from .other import PrizeMinio
