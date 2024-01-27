@@ -11,6 +11,8 @@ load_dotenv()
 class AppSettings(BaseSettings):
     LOG_LEVEL: int = logging.DEBUG
     DEBUG: bool = False
+
+    GAME_KEY_LENGTH: int = 6
  
     POSTGRES_USER: str = env.get('POSTGRES_USER')
     POSTGRES_PASSWORD: str = env.get('POSTGRES_PASSWORD')

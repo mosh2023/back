@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 
-
 from app.models.api import Id, GameKey, Hit, PlayerModel, FullFieldModel
-from app.db.repository import User, Player, Game, Field, Boat, Prize
+from app.db.repository import User, Player, Game, Field
+from app.services.hit_logic import get_player_ready_to_move, create_full_field_model
 
 
 router = APIRouter(
@@ -41,35 +41,7 @@ async def hit(hit: Hit) -> FullFieldModel:
         raise HTTPException(400, 'You can not hit the same field multiple times.')
     
     game = await Game.get(hit.game_id)
-
-    if game.player1_id and game.player2_id:
-        player1 = await Player.get(game.player1_id)
-        player2 = await Player.get(game.player2_id)
-
-        player = Player.whose_move_is(player1, player2)
-        if not player or player.id != hit.player_id:
-            raise HTTPException(400, 'You can not hit the fields now. Maybe there is not your turn.')
-    elif game.player1_id == hit.player_id:
-        player = await Player.get(game.player1_id)
-    elif game.player2_id == hit.player_id:
-        player = await Player.get(game.player2_id)
-    else: 
-        raise HTTPException(400, 'You do not have enough moves to hit the fields.')
+    player = await get_player_ready_to_move(game, hit.player_id)
 
     await player.hit(field)
-
-    field_model, boat_model, prize_model = field.get_model(), None, None
-    if field.boat_id:
-        boat: Boat = await Boat.get(field.boat_id)
-        prize: Prize = await Prize.get(boat.prize_id)
-        await prize.set_winner(player.user_id)
-        boat_model = boat.get_model()
-        prize_model = prize.get_model()
-
-    result = FullFieldModel(
-        field=field_model,
-        boat=boat_model,
-        prize=prize_model
-    )
-    return result
-
+    return await create_full_field_model(field, player.user_id)

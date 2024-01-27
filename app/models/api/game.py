@@ -38,8 +38,6 @@ class GameInfo(BaseModel):
     board_size: int = Field(gt=0)
     admin_id: int = Field(gt=0)
 
-    # Ключ создается в бизнес логике автоматом. Его надо возвращать.
-
 
 class GameEdit(BaseModel):
     id: int = Field(gt=0)
@@ -52,3 +50,7 @@ class GameKey(BaseModel):
     user_id: int = Field(gt=0)
     key: str = Field(min_length=4, max_length=10)
 
+
+class GameId(BaseModel):
+    id: int = Field(gt=0)
+    key: str = Field(min_length=4, max_length=10)

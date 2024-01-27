@@ -3,7 +3,9 @@ from fastapi import APIRouter, HTTPException, Depends
 from app.api.dependencies import require_admin
 from app.common.errors.db import ORMUniqueFieldError
 from app.db.repository import Game, Player
-from app.models.api import Id, GameInfo, GameEdit, PlayerMoves, AuthResponse
+from app.models.api import GameId, GameInfo, GameEdit, PlayerMoves, AuthResponse
+from app.services.game_logic import generate_key
+
 
 router = APIRouter(
     prefix="/v1", tags=['admin']
@@ -11,15 +13,16 @@ router = APIRouter(
 
 
 @router.post('/game')
-async def create_game(game: GameInfo, auth: AuthResponse = Depends(require_admin)) -> Id:
+async def create_game(game: GameInfo, auth: AuthResponse = Depends(require_admin)) -> GameId:
     game: Game = Game.get_repository(game)
-    # Resolve key, return `key` with Id.
-    game.key = 'ABClass'
+
+    key = generate_key()
+    game.key = key
     try:
         await game.create()
     except ORMUniqueFieldError:
         raise HTTPException(400, 'One of the model fields does not match the uniqueness property.')
-    return Id(id=game.id)
+    return GameId(id=game.id, key=key)
 
 
 @router.put('/game')
