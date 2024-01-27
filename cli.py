@@ -23,7 +23,7 @@ def game(
         port: int = 5002,
         host: str = "127.0.0.1",
         workers: int = 1,
-        reload: bool = False  # Добавлен новый параметр для перезагрузки
+        reload: bool = False
 ):
     if platform.system() == "Windows" or manager == ProcessManager.uvicorn:
         run_args = [
@@ -36,7 +36,7 @@ def game(
             "--workers",
             f"{workers}",
         ]
-        if reload:  # Добавляем --reload если это требуется
+        if reload:
             run_args.append("--reload")
         proc = subprocess.Popen(run_args, stdout=None, stderr=subprocess.STDOUT)
 

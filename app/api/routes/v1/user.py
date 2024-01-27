@@ -1,8 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, File, UploadFile
+from botocore.exceptions import NoCredentialsError
+from starlette.responses import StreamingResponse
 
 from app.common.errors import ORMObjectNoFoundError, ORMUniqueFieldError
 from app.db.repository import User
 from app.models.api import Id, UserModel, UserInfo, UserEdit
+from app.minio import UserMinio
 
 router = APIRouter(
     prefix="/v1", tags=['user']
@@ -33,3 +36,8 @@ async def edit_user(fields: UserEdit):
     user: User = await User.get(fields.id)
     await user.modify(fields.name, fields.icon_link)
     print(user.icon_link)
+
+
+@router.post("/user/upload")
+async def upload_file(file: UploadFile = File(...)):
+    return ...
