@@ -30,10 +30,6 @@ class Field(BaseRepository):
     def get_model(self) -> FieldModel:
         return FieldModel(id=self.id, game_id=self.game_id, x=self.x, y=self.y,
             injured=self.injured, player_id=self.player_id, boat_id=self.boat_id)
-    
-    def get_secure_model(self) -> FieldSecureModel:
-        return FieldModel(id=self.id, game_id=self.game_id, x=self.x, y=self.y,
-            injured=self.injured, player_id=self.player_id)
 
     @classmethod
     def get_repository(cls, orm: FieldModel, session: AsyncSession = async_session) -> Field:

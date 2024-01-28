@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.models.api import GameAPIModel, FieldModel, FieldSecureModel, BoatModel, PrizeModel, AuthResponse
+from app.models.api import GameAPIModel, FieldModel, BoatModel, PrizeModel, AuthResponse
 from typing import Optional
 import asyncio
 
@@ -33,10 +33,10 @@ async def get_game(game_id: int) -> Optional[GameAPIModel]:
 
 
 @router.get('/game/fields/{game_id}')
-async def get_fields(game_id: int, auth: AuthResponse = Depends(require_user)) -> list[FieldModel]:
-    '''Field models without `boat_id`.'''
+async def get_injured_fields(game_id: int, auth: AuthResponse = Depends(require_user)) -> list[FieldModel]:
+    '''Get injured Field models.'''
     game: Game = await Game.get(game_id)
-    return [field.get_secure_model() for field in await game.get_fields()]
+    return [field.get_model() for field in await game.get_injured_fields()]
 
 
 @router.get('/game/fields/admin/{game_id}')
@@ -46,15 +46,23 @@ async def get_admin_fields(game_id: int, auth: AuthResponse = Depends(require_ad
     return [field.get_model() for field in await game.get_fields()]
 
 
+@router.get('/game/boats/{game_id}')
+async def get_won_boats(game_id: int, auth: AuthResponse = Depends(require_user)) -> list[BoatModel]:
+    '''Get Boats from hitted Fields.'''
+    game: Game = await Game.get(game_id)
+    return [boat.get_model() for boat in await game.get_won_boats()]
+
+
 @router.get('/game/boats/admin/{game_id}')
-async def get_boats(game_id: int, auth: AuthResponse = Depends(require_admin)) -> list[BoatModel]:
+async def get_admin_boats(game_id: int, auth: AuthResponse = Depends(require_admin)) -> list[BoatModel]:
+    '''Full list of the Boats'''
     game: Game = await Game.get(game_id)
     return [boat.get_model() for boat in await game.get_boats()]
 
 
 @router.get('/game/prizes/{game_id}')
 async def get_won_prizes(game_id: int, auth: AuthResponse = Depends(require_user)) -> list[PrizeModel]:
-    '''Only prizes that have already been won.'''
+    '''Only Prizes that have already been won.'''
     game: Game = await Game.get(game_id)
     return [prize.get_model() for prize in await game.get_won_prizes()]
 
