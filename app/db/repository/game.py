@@ -127,6 +127,19 @@ class Game(BaseRepository):
                 .where(FieldORM.game_id == self.id)
             )
             return (Prize.get_repository(orm, self.session) for orm in prizes)
+        
+    async def get_won_prizes(self) -> Iterable[Prize]:
+        async with self.session() as session:
+            prizes = await session.scalars(
+                sa.select(PrizeORM)
+                .join(PrizeORM.boat)
+                .join(BoatORM.field)
+                .where(sa.and_(
+                    FieldORM.game_id == self.id, 
+                    PrizeORM.user_id.is_not(None)
+                ))
+            )
+            return (Prize.get_repository(orm, self.session) for orm in prizes)
 
     def __repr__(self) -> str:
         return f'Game(id={self.id}, name="{self.name}", description=..., board_size={self.board_size}, ' \

@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
 
 from . import BaseRepository
-from app.models.api import FieldModel
+from app.models.api import FieldModel, FieldSecureModel
 from app.db.tables import FieldORM
 from app.db.setup import async_session
 
@@ -25,11 +25,15 @@ class Field(BaseRepository):
 
     def _get_orm(self) -> FieldORM:
         return FieldORM(id=self.id, game_id=self.game_id, x=self.x, y=self.y,
-                        injured=self.injured, player_id=self.player_id, boat_id=self.boat_id)
+            injured=self.injured, player_id=self.player_id, boat_id=self.boat_id)
 
     def get_model(self) -> FieldModel:
         return FieldModel(id=self.id, game_id=self.game_id, x=self.x, y=self.y,
-                          injured=self.injured, player_id=self.player_id, boat_id=self.boat_id)
+            injured=self.injured, player_id=self.player_id, boat_id=self.boat_id)
+    
+    def get_secure_model(self) -> FieldSecureModel:
+        return FieldModel(id=self.id, game_id=self.game_id, x=self.x, y=self.y,
+            injured=self.injured, player_id=self.player_id)
 
     @classmethod
     def get_repository(cls, orm: FieldModel, session: AsyncSession = async_session) -> Field:
