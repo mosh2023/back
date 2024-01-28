@@ -4,7 +4,7 @@ from app.api.dependencies import require_admin
 from app.common.errors.db import ORMUniqueFieldError
 from app.db.repository import Game, Player
 from app.models.api import GameId, GameInfo, GameEdit, PlayerMoves, AuthResponse
-from app.services.game_logic import generate_key
+from app.services.game import generate_key
 
 
 router = APIRouter(
