@@ -42,6 +42,7 @@ class AuthRequest(BaseModel):
 
 class AuthResponse(BaseModel):
     id: int = Field(..., example=1, description="ID пользователя")
+    user_id: int = Field(..., example=1, description="User ID пользователя")
     login: str = Field(min_length=3, max_length=50, example="user123", description="Логин пользователя")
     role: Roles
 
