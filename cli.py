@@ -20,8 +20,8 @@ def dummy_command():
 @app.command()
 def game(
         manager: ProcessManager = ProcessManager.uvicorn,
-        port: int = 5002,
-        host: str = "127.0.0.1",
+        port: int = 5000,
+        host: str = "localhost",
         workers: int = 1,
         reload: bool = False
 ):

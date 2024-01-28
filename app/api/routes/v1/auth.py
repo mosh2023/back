@@ -29,7 +29,6 @@ async def register(data: AuthInfo) -> Id:
 
 @router.post("/token")
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
-    print(form_data)
     auth: AuthRepository = await AuthRepository.get_by_login(form_data.username)
     if not auth or not verify_password(form_data.password, auth.password):
         raise HTTPException(
