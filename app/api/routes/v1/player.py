@@ -1,16 +1,18 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
-from app.models.api import Id, GameKey, Hit, PlayerModel, FullFieldModel
+from app.api.dependencies import require_user
 from app.db.repository import User, Player, Game, Field
+from app.models.api import GameKey, Hit, PlayerModel, FullFieldModel
+from app.models.api import Id, AuthResponse
 from app.services.hit import get_player_ready_to_move, create_full_field_model
 
 router = APIRouter(
-    prefix="/v1"
+    prefix="/v1", tags=['player']
 )
 
 
 @router.put('/player/join')
-async def join_game(key: GameKey) -> PlayerModel:
+async def join_game(key: GameKey, auth: AuthResponse = Depends(require_user)) -> PlayerModel:
     game: Game = await Game.get_by_key(key.key)
     if not game:
         raise HTTPException(404, f'Game with key="{key.key}" does not found.')
@@ -24,13 +26,13 @@ async def join_game(key: GameKey) -> PlayerModel:
 
 
 @router.put('/player/leave')
-async def leave_game(player_id: Id):
+async def leave_game(player_id: Id, auth: AuthResponse = Depends(require_user)):
     player = await Player.get(player_id.id)
     await player.leave_game()
 
 
-@router.put('/game/hit', tags=['player'])
-async def hit(hit: Hit) -> FullFieldModel:
+@router.put('/game/hit')
+async def hit(hit: Hit, auth: AuthResponse = Depends(require_user)) -> FullFieldModel:
     field = await Field.get_by_xy(hit.game_id, hit.x, hit.y)
 
     if field is None:

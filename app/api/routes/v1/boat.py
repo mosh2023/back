@@ -33,13 +33,13 @@ async def place_boat(boat_place: BoatPlace, auth: AuthResponse = Depends(require
 
 
 @router.put('/game/field/remove_boat')
-async def remove_boat(field_id: Id):
+async def remove_boat(field_id: Id, auth: AuthResponse = Depends(require_admin)):
     field: Field = await Field.get(field_id.id)
     await field.remove_boat()
 
 
 @router.delete('/game/boat/delete')
-async def delete_boat(boat_id: Id):
+async def delete_boat(boat_id: Id, auth: AuthResponse = Depends(require_admin)):
     boat: Boat = await Boat.get(boat_id)
     try:
         await boat.delete()

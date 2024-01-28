@@ -25,7 +25,7 @@ async def get_admin_games(admin_id: int) -> list[GameAPIModel]:
         *[game.get_api_model() for game in await admin.get_games()])
 
 
-@router.get('/game/{game_id}', tags=['game'])
+@router.get('/game/{game_id}')
 async def get_game(game_id: int) -> Optional[GameAPIModel]:
     game: Game = await Game.get(game_id)
     return await game.get_api_model()
