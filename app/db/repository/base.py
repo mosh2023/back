@@ -1,6 +1,5 @@
 from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
 import sqlalchemy as sa
 import abc
 
@@ -34,7 +33,7 @@ class BaseRepository(abc.ABC):
                 async with session.begin():
                     session.add(orm)
             self.id = orm.id
-        except IntegrityError:
+        except:
             raise ORMUniqueFieldError(orm)
         
     async def delete(self) -> None:
@@ -45,7 +44,7 @@ class BaseRepository(abc.ABC):
                 async with session.begin():
                     session.delete(orm)
             self.id = None
-        except IntegrityError:
+        except:
             raise ORMRelationError(orm)
 
     @classmethod
