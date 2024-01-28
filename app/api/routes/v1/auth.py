@@ -5,11 +5,11 @@ from typing import Annotated
 
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 
 from app.core import config
-from app.db.repository import AuthRepository
+from app.db.repository import AuthRepository, User
 from app.models.api import Id, Token, AuthInfo, AuthResponse
 
 router = APIRouter(
@@ -29,6 +29,7 @@ async def register(data: AuthInfo) -> Id:
 
 @router.post("/token")
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
+    print(form_data)
     auth: AuthRepository = await AuthRepository.get_by_login(form_data.username)
     if not auth or not verify_password(form_data.password, auth.password):
         raise HTTPException(
@@ -37,8 +38,11 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    user_id = await User.get_by_id(auth.id)
+
     auth_data = AuthResponse(
         id=auth.id,
+        user_id=user_id,
         login=auth.login,
         role=auth.role
     )
