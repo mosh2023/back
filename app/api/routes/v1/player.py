@@ -16,7 +16,7 @@ async def join_game(key: GameKey, auth: AuthResponse = Depends(require_user)) ->
     game: Game = await Game.get_by_key(key.key)
     if not game:
         raise HTTPException(404, f'Game with key="{key.key}" does not found.')
-    user: User = await User.get(key.user_id)
+    user: User = await User.get(auth.user_id)
     player: Player = await user.join_game(game)
 
     if not player:

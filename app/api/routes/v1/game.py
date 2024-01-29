@@ -13,15 +13,15 @@ router = APIRouter(
 
 
 @router.get('/games/{user_id}')
-async def get_games(user_id: int, auth: AuthResponse = Depends(require_user)) -> list[GameAPIModel]:
-    user: User = await User.get(user_id)
+async def get_games(auth: AuthResponse = Depends(require_user)) -> list[GameAPIModel]:
+    user: User = await User.get(auth.user_id)
     return await asyncio.gather(
         *[game.get_api_model() for game in await user.get_games()])
 
 
 @router.get('/games/admin/{admin_id}')
-async def get_admin_games(admin_id: int, auth: AuthResponse = Depends(require_admin)) -> list[GameAPIModel]:
-    admin: Admin = await Admin.get(admin_id)
+async def get_admin_games(auth: AuthResponse = Depends(require_admin)) -> list[GameAPIModel]:
+    admin: Admin = await Admin.get(auth.user_id)
     return await asyncio.gather(
         *[game.get_api_model() for game in await admin.get_games()])
 

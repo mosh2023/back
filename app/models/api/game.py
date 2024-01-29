@@ -47,7 +47,6 @@ class GameEdit(BaseModel):
 
 
 class GameKey(BaseModel):
-    user_id: int = Field(gt=0)
     key: str = Field(min_length=4, max_length=10)
 
 

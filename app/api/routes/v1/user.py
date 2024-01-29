@@ -12,11 +12,11 @@ router = APIRouter(
 
 
 @router.get('/user/{user_id}')
-async def get_profile(user_id: int, auth: AuthResponse = Depends(verify_token)) -> UserModel:
+async def get_profile(auth: AuthResponse = Depends(verify_token)) -> UserModel:
     try:
-        return await get_user_profile(user_id)
+        return await get_user_profile(auth.user_id)
     except ORMObjectNoFoundError:
-        raise HTTPException(404, f'User with id={user_id} does not exist.')
+        raise HTTPException(404, f'User with id={auth.user_id} does not exist.')
 
 
 @router.post('/user')
@@ -30,7 +30,7 @@ async def create_user(user: UserInfo, auth: AuthResponse = Depends(verify_token)
 
 @router.put('/user')
 async def edit_user(fields: UserEdit, auth: AuthResponse = Depends(verify_token)):
-    user: User = await User.get(fields.id)
+    user: User = await User.get(auth.user_id)
     await user.modify(fields.name, fields.icon_link)
 
 
