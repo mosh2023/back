@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy as sa
 
 from . import BaseRepository
-from app.models.api import FieldModel, FieldSecureModel
+from app.models.api import FieldModel
 from app.db.tables import FieldORM
 from app.db.setup import async_session
 

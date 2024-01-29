@@ -3,7 +3,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
 from app.core import config
-from app.db.repository import AuthRepository
+from app.db.repository import AuthRepository, User
 from app.models.api import AuthResponse, Roles
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/token")
@@ -24,13 +24,21 @@ async def verify_token(token: str = Depends(oauth2_scheme)):
     except jwt.PyJWTError:
         raise credentials_exception
     auth: AuthRepository = await AuthRepository.get_by_login(token_data.login)
-    if auth is None:
+    user_id = await User.get_by_id(auth.id)
+
+    auth_data = AuthResponse(
+        id=auth.id,
+        user_id=user_id,
+        login=auth.login,
+        role=auth.role
+    )
+    if auth_data is None:
         raise credentials_exception
-    return auth
+    return auth_data
 
 
 async def require_admin(auth: AuthResponse = Depends(verify_token)):
-    if auth.role != Roles.admin:
+    if auth.role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough privileges",
@@ -39,7 +47,7 @@ async def require_admin(auth: AuthResponse = Depends(verify_token)):
 
 
 async def require_user(auth: AuthResponse = Depends(verify_token)):
-    if auth.role != Roles.user:
+    if auth.role != "user":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not enough privileges",

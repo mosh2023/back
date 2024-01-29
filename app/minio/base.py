@@ -1,28 +1,22 @@
-from app.core import config
-from app.models.api import Id
+import urllib.parse
+import logging
+from botocore.exceptions import ClientError
+from app.api.dependencies import client
 
 
-class BaseMinio:
-    CLS_NAME = 'base'
-    PATH = CLS_NAME + '/{id}/{field}'
-    URL = config.MINIO_URL
+async def upload_file_to_s3(file, file_name, bucket_name):
+    try:
+        client.upload_fileobj(
+            Fileobj=file,
+            Bucket=bucket_name,
+            Key=file_name,
+        )
+    except ClientError as e:
+        logging.error(e)
+        return None
 
-    def __init__(self, obj: Id) -> None:
-        self.id = obj.id
-
-    # Насчет расширений файлов: можешь добавлять это через PATH в дочерних классах
-    def get_url(self, field: str) -> str:
-        return self.URL + self.PATH.format(id=self.id, field=field)
-
-    # можно передавать field в init, как удобнее
-    async def upload(self, field: str, file) -> str:
-        ...
-        return self.get_url(field)
-
-    async def rewrite(self, field: str, file) -> str:
-        ...
-        return self.get_url(field)
-
-    async def download(self, field: str) -> bytes:
-        # not bytes actualy.
-        ...
+    response = client.generate_presigned_url('get_object',
+                                             Params={'Bucket': bucket_name,
+                                                     'Key': file_name},
+                                             ExpiresIn=999999)
+    return response
