@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 
-ашсfrom app.common.errors.db import ORMUniqueFieldError
+from app.common.errors.db import ORMUniqueFieldError
 from app.core import config
 from app.db.repository import AuthRepository, User
 from app.models.api import Id, Token, AuthInfo, AuthResponse
