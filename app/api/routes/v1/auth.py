@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 
+ашсfrom app.common.errors.db import ORMUniqueFieldError
 from app.core import config
 from app.db.repository import AuthRepository, User
 from app.models.api import Id, Token, AuthInfo, AuthResponse
@@ -23,7 +24,10 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 async def register(data: AuthInfo) -> Id:
     data.password = pwd_context.hash(data.password)
     auth: AuthRepository = AuthRepository.get_repository(data)
-    await auth.create()
+    try:
+        await auth.create()
+    except ORMUniqueFieldError:
+        raise HTTPException(400, 'User already exists')
     return Id(id=auth.id)
 
 
