@@ -18,7 +18,7 @@ async def get_prizes(auth: AuthResponse = Depends(require_admin)) -> list[PrizeM
     return [prize.get_model() for prize in await user.get_prizes()]
 
 
-@router.post('/prize') # переделать передачу admin_id
+@router.post('/prize')  # переделать передачу admin_id
 async def create_prize(prize: PrizeInfo, auth: AuthResponse = Depends(require_admin)) -> Id:
     prize: Prize = Prize.get_repository(prize)
     try:
@@ -32,7 +32,7 @@ async def create_prize(prize: PrizeInfo, auth: AuthResponse = Depends(require_ad
 async def edit_prize(prize_edit: PrizeEdit, auth: AuthResponse = Depends(require_admin)):
     prize: Prize = await Prize.get(prize_edit.id)
     await prize.modify(prize_edit.name, prize_edit.description,
-        prize_edit.icon_link)
+                       prize_edit.icon_link)
 
 
 @router.delete('/prize')
@@ -47,6 +47,11 @@ async def delete_prize(prize_id: Id, auth: AuthResponse = Depends(require_admin)
 @router.post("/prize/upload")
 async def upload_prize_icon(prize_id: Id, file: UploadFile = File(...), auth: AuthResponse = Depends(require_admin)):
     icon_link = save_prize_picture(prize_id, file.file, file.filename)
+    if file.content_type not in ["image/jpeg", "image/png", "image/gif"]:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail=f"Unsupported file type {file.content_type}"
+        )
     if icon_link is None:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to upload file.")
     return icon_link

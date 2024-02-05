@@ -36,6 +36,11 @@ async def edit_user(fields: UserEdit, auth: AuthResponse = Depends(verify_token)
 
 @router.post("/user/upload")
 async def upload_user_icon(file: UploadFile = File(...), auth: AuthResponse = Depends(verify_token)):
+    if file.content_type not in ["image/jpeg", "image/png", "image/gif"]:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail=f"Unsupported file type {file.content_type}"
+        )
     icon_link = await save_profile_picture(auth.user_id, file.file, file.filename)
     if icon_link is None:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to upload file.")
