@@ -41,7 +41,7 @@ async def upload_user_icon(file: UploadFile = File(...), auth: AuthResponse = De
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             detail=f"Unsupported file type {file.content_type}"
         )
-    icon_link = await save_profile_picture(auth.user_id, file.file, file.filename)
+    icon_link = await save_profile_picture(auth.user_id, file)
     if icon_link is None:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to upload file.")
     return icon_link

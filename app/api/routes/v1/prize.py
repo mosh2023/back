@@ -46,7 +46,7 @@ async def delete_prize(prize_id: Id, auth: AuthResponse = Depends(require_admin)
 
 @router.post("/prize/upload")
 async def upload_prize_icon(prize_id: Id, file: UploadFile = File(...), auth: AuthResponse = Depends(require_admin)):
-    icon_link = save_prize_picture(prize_id, file.file, file.filename)
+    icon_link = save_prize_picture(prize_id, file)
     if file.content_type not in ["image/jpeg", "image/png", "image/gif"]:
         raise HTTPException(
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
