@@ -1,11 +1,11 @@
-from fastapi import APIRouter, HTTPException, File, UploadFile, Depends
+from fastapi import APIRouter, HTTPException, File, UploadFile, Depends, status
 
-from app.api.dependencies import require_user, require_admin
+from app.api.dependencies import require_admin
 from app.common.errors.db import ORMUniqueFieldError, ORMRelationError
 from app.db.repository import User, Prize
 from app.models.api import Id, AuthResponse
 from app.models.api import PrizeModel, PrizeInfo, PrizeEdit
-from app.services.prize import save_prize_picture, get_prize_info
+from app.services.prize import save_prize_picture
 
 router = APIRouter(
     prefix="/v1", tags=['prize']
@@ -46,4 +46,7 @@ async def delete_prize(prize_id: Id, auth: AuthResponse = Depends(require_admin)
 
 @router.post("/prize/upload")
 async def upload_prize_icon(prize_id: Id, file: UploadFile = File(...), auth: AuthResponse = Depends(require_admin)):
-    return await save_prize_picture(prize_id, file.file, file.filename)
+    icon_link = save_prize_picture(prize_id, file.file, file.filename)
+    if icon_link is None:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to upload file.")
+    return icon_link

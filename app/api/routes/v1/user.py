@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, File, UploadFile, Depends
+from fastapi import APIRouter, HTTPException, File, UploadFile, Depends, status
 
 from app.api.dependencies import verify_token
 from app.common.errors import ORMObjectNoFoundError, ORMUniqueFieldError
@@ -36,4 +36,7 @@ async def edit_user(fields: UserEdit, auth: AuthResponse = Depends(verify_token)
 
 @router.post("/user/upload")
 async def upload_user_icon(file: UploadFile = File(...), auth: AuthResponse = Depends(verify_token)):
-    return await save_profile_picture(auth.user_id, file.file, file.filename)
+    icon_link = await save_profile_picture(auth.user_id, file.file, file.filename)
+    if icon_link is None:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to upload file.")
+    return icon_link
