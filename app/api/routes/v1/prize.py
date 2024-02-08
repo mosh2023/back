@@ -3,8 +3,7 @@ from fastapi import APIRouter, HTTPException, File, UploadFile, Depends, status
 from app.api.dependencies import require_admin
 from app.common.errors.db import ORMUniqueFieldError, ORMRelationError
 from app.db.repository import User, Prize
-from app.models.api import Id, AuthResponse
-from app.models.api import PrizeModel, PrizeInfo, PrizeEdit
+from app.models.api import Id, AuthResponse, PrizeModel, PrizeInfo, PrizeEdit
 from app.services.prize import save_prize_picture
 
 router = APIRouter(

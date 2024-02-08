@@ -21,6 +21,7 @@ async def get_profile(auth: AuthResponse = Depends(verify_token)) -> UserModel:
 
 @router.post('/user')
 async def create_user(user: UserInfo, auth: AuthResponse = Depends(verify_token)) -> Id:
+    user: User = User.get_repository(user)
     try:
         await user.create()
     except ORMUniqueFieldError:
