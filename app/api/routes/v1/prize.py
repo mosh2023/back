@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, File, Form, UploadFile, Depends, status
 
-from app.api.dependencies import require_admin
+from app.api.dependencies import require_admin, require_user
 from app.common.errors.db import ORMUniqueFieldError, ORMRelationError
-from app.db.repository import User, Prize
+from app.db.repository import User, Prize, Admin
 from app.models.api import Id, AuthResponse, PrizeModel, PrizeInfo, PrizeEdit
 from app.services.prize import save_prize_picture
 
@@ -12,9 +12,15 @@ router = APIRouter(
 
 
 @router.get('/prize/{user_id}')
-async def get_prizes(auth: AuthResponse = Depends(require_admin)) -> list[PrizeModel]:
+async def get_prizes(auth: AuthResponse = Depends(require_user)) -> list[PrizeModel]:
     user: User = await User.get(auth.user_id)
     return [prize.get_model() for prize in await user.get_prizes()]
+
+
+@router.get('/prize/admin/{user_id}')
+async def get_admin_prizes(auth: AuthResponse = Depends(require_admin)) -> list[PrizeModel]:
+    admin: Admin = await Admin.get(auth.user_id)
+    return [prize.get_model() for prize in await admin.get_prizes()]
 
 
 @router.post('/prize')  # переделать передачу admin_id
@@ -36,7 +42,7 @@ async def edit_prize(prize_edit: PrizeEdit, auth: AuthResponse = Depends(require
 
 @router.delete('/prize')
 async def delete_prize(prize_id: Id, auth: AuthResponse = Depends(require_admin)):
-    prize: Prize = await Prize.get(prize_id)
+    prize: Prize = await Prize.get(prize_id.id)
     try:
         await prize.delete()
     except ORMRelationError:
@@ -44,7 +50,8 @@ async def delete_prize(prize_id: Id, auth: AuthResponse = Depends(require_admin)
 
 
 @router.post("/prize/upload")
-async def upload_prize_icon(prize_id: int = Form(...), file: UploadFile = File(...), auth: AuthResponse = Depends(require_admin)):
+async def upload_prize_icon(prize_id: int = Form(...), file: UploadFile = File(...),
+                            auth: AuthResponse = Depends(require_admin)):
     if file.content_type not in ["image/jpeg", "image/png", "image/gif"]:
         raise HTTPException(
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,

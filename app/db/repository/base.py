@@ -35,17 +35,17 @@ class BaseRepository(abc.ABC):
             self.id = orm.id
         except:
             raise ORMUniqueFieldError(orm)
-        
+
     async def delete(self) -> None:
         '''Deletes `ORM` representation of this `Repository`.'''
         orm = self._get_orm()
-        try:
-            async with self.session as session:
-                async with session.begin():
-                    session.delete(orm)
-            self.id = None
-        except:
-            raise ORMRelationError(orm)
+        # try:
+        async with self.session() as session:
+            async with session.begin():
+                await session.delete(orm)
+        self.id = None
+        # except:
+        #     raise ORMRelationError(orm)
 
     @classmethod
     @abc.abstractmethod
