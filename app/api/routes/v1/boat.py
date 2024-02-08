@@ -25,7 +25,10 @@ async def create_boat(boat: BoatInfo, auth: AuthResponse = Depends(require_admin
 async def place_boat(boat_place: BoatPlace, auth: AuthResponse = Depends(require_admin)):
     field: Field = Field.get_by_xy(boat_place.game_id, boat_place.x, boat_place.y)
     if field is not None:
-        await field.set_boat(boat_place.id)
+        if not field.boat_id:
+            await field.set_boat(boat_place.id)
+        else:
+            raise HTTPException(400, 'There is already a boat in this field.')
     else:
         field = Field(None, boat_place.game_id, boat_place.x, 
             boat_place.y, None, boat_place.id)
