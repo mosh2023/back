@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, File, UploadFile, Depends, status
+from fastapi import APIRouter, HTTPException, File, Form, UploadFile, Depends, status
 
 from app.api.dependencies import require_admin
 from app.common.errors.db import ORMUniqueFieldError, ORMRelationError
@@ -44,13 +44,13 @@ async def delete_prize(prize_id: Id, auth: AuthResponse = Depends(require_admin)
 
 
 @router.post("/prize/upload")
-async def upload_prize_icon(prize_id: Id, file: UploadFile = File(...), auth: AuthResponse = Depends(require_admin)):
-    icon_link = save_prize_picture(prize_id, file)
+async def upload_prize_icon(prize_id: int = Form(...), file: UploadFile = File(...), auth: AuthResponse = Depends(require_admin)):
     if file.content_type not in ["image/jpeg", "image/png", "image/gif"]:
         raise HTTPException(
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             detail=f"Unsupported file type {file.content_type}"
         )
+    icon_link = await save_prize_picture(prize_id, file)
     if icon_link is None:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to upload file.")
     return icon_link
