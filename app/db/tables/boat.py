@@ -8,7 +8,7 @@ class BoatORM(DBBase):
     __tablename__ = 'boat'
 
     id = sa.Column('id', sa.Integer, primary_key=True, autoincrement=True)
-    prize_id = sa.Column('prize_id', sa.ForeignKey('prize.id'), nullable=False)
+    prize_id = sa.Column('prize_id', sa.ForeignKey('prize.id'), unique=True, nullable=False)
 
     field = orm.relationship('FieldORM', back_populates='boat', uselist=False)
     prize = orm.relationship('PrizeORM', back_populates='boat')

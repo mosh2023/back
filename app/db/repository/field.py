@@ -67,5 +67,5 @@ class Field(BaseRepository):
         await self._update({'boat_id': None})
 
     def __repr__(self) -> str:
-        return f'Field(id={self.id}, game_id={self.game_id}, x={self.x}, y={self.y},' \
+        return f'Field(id={self.id}, game_id={self.game_id}, x={self.x}, y={self.y}, ' \
                f'injured={self.injured}, player_id={self.player_id}, boat_id={self.boat_id})'

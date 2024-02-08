@@ -13,7 +13,7 @@ class FieldORM(DBBase):
     y = sa.Column('y', sa.Integer, nullable=False)
     injured = sa.Column('injured', sa.Boolean, nullable=False, default=False)
     player_id = sa.Column('player_id', sa.ForeignKey('player.id'))
-    boat_id = sa.Column('boat_id', sa.ForeignKey('boat.id'))
+    boat_id = sa.Column('boat_id', sa.ForeignKey('boat.id'), unique=True)
 
     __table_args__ = (
         sa.UniqueConstraint('game_id', 'x', 'y', name='unique_field'),

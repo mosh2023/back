@@ -14,7 +14,7 @@ async def save_prize_picture(prize_id, file):
         return None
     new_icon_link = urllib.parse.urljoin(config.MINIO_URL, icon_link)
     prize: Prize = await Prize.get(prize_id)
-    await prize.modify(prize.name, prize.description, new_icon_link)
+    await prize.modify(icon_link=new_icon_link)
     return new_icon_link
 
 

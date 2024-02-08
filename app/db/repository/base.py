@@ -38,14 +38,14 @@ class BaseRepository(abc.ABC):
 
     async def delete(self) -> None:
         '''Deletes `ORM` representation of this `Repository`.'''
-        orm = self._get_orm()
-        # try:
-        async with self.session() as session:
-            async with session.begin():
-                await session.delete(orm)
-        self.id = None
-        # except:
-        #     raise ORMRelationError(orm)
+        try:
+            async with self.session() as session:
+                async with session.begin():
+                    stmt = sa.delete(self.ORM).where(self.ORM.id == self.id)
+                    await session.execute(stmt)
+            self.id = None
+        except:
+            raise ORMRelationError(self)
 
     @classmethod
     @abc.abstractmethod
@@ -82,6 +82,8 @@ class BaseRepository(abc.ABC):
         for key in list(d.keys()):
             if d[key] is None:
                 del d[key]
+            elif d[key] == '':
+                d[key] = None
 
         if not d:
             raise ORMNoFieldsToUpdateError(self.__class__.__name__, self.id)

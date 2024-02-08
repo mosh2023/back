@@ -36,8 +36,8 @@ async def create_prize(prize: PrizeInfo, auth: AuthResponse = Depends(require_ad
 @router.put('/prize')
 async def edit_prize(prize_edit: PrizeEdit, auth: AuthResponse = Depends(require_admin)):
     prize: Prize = await Prize.get(prize_edit.id)
-    await prize.modify(prize_edit.name, prize_edit.description,
-                       prize_edit.icon_link)
+    await prize.modify(name=prize_edit.name, 
+                       description=prize_edit.description)
 
 
 @router.delete('/prize')

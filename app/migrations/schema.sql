@@ -92,6 +92,7 @@ CREATE TABLE boat (
 	id serial4 NOT NULL,
 	prize_id int4 NOT NULL,
 	CONSTRAINT boat_pkey PRIMARY KEY (id),
+	CONSTRAINT boat_prize_id_key UNIQUE (prize_id),
 	CONSTRAINT boat_prize_id_fkey FOREIGN KEY (prize_id) REFERENCES prize(id)
 );
 
@@ -134,6 +135,7 @@ CREATE TABLE field (
 	injured bool NOT NULL,
 	boat_id int4 NULL,
 	player_id int4 NULL,
+	CONSTRAINT field_boat_id_key UNIQUE (boat_id),
 	CONSTRAINT field_pkey PRIMARY KEY (id),
 	CONSTRAINT unique_field UNIQUE (game_id, x, y),
 	CONSTRAINT field_boat_id_fkey FOREIGN KEY (boat_id) REFERENCES boat(id),
