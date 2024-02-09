@@ -12,7 +12,7 @@ async def save_prize_picture(prize_id, file):
     icon_link = await upload_file_to_s3(file.file, file_name, "prize")
     if icon_link is None:
         return None
-    new_icon_link = urllib.parse.urljoin(config.MINIO_URL, icon_link)
+    new_icon_link = urllib.parse.urljoin('http://localhost:9000/', icon_link)
     prize: Prize = await Prize.get(prize_id)
     await prize.modify(icon_link=new_icon_link)
     return new_icon_link

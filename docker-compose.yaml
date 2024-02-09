@@ -1,4 +1,4 @@
-version: "3.3"
+version: '3.8'
 
 services:
   app:
@@ -51,3 +51,7 @@ services:
       timeout: 20s
       retries: 3
     restart: on-failure
+
+networks:
+  mosh2023:
+    external: true
