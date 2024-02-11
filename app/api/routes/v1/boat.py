@@ -30,7 +30,7 @@ async def place_boat(boat_place: BoatPlace, auth: AuthResponse = Depends(require
             raise HTTPException(400, 'There is already a boat in this field.')
     else:
         field = Field(None, boat_place.game_id, boat_place.x,
-                      boat_place.y, None, boat_place.id)
+                      boat_place.y, False, None, boat_place.boat_id)
         await field.create()
 
 

@@ -12,7 +12,7 @@ class BoatInfo(BaseModel):
 
 
 class BoatPlace(BaseModel):
-    id: int = Field(gt=0)
+    boat_id: int = Field(gt=0)
     game_id: int = Field(gt=0)
     x: int = Field(gt=-1)
     y: int = Field(gt=-1)
