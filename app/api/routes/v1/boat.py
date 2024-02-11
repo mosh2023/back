@@ -41,8 +41,8 @@ async def remove_boat(field_id: Id, auth: AuthResponse = Depends(require_admin))
     await field.remove_boat()
 
 
-@router.delete('/game/boat/delete')
-async def delete_boat(boat_id: Id, auth: AuthResponse = Depends(require_admin)):
+@router.delete('/game/boat/delete/{boat_id}')
+async def delete_boat(boat_id: int, auth: AuthResponse = Depends(require_admin)):
     boat: Boat = await Boat.get(boat_id)
     try:
         await boat.delete()
