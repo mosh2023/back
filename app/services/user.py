@@ -12,7 +12,7 @@ async def save_profile_picture(user_id, file):
     icon_link = await upload_file_to_s3(file.file, file_name, "user")
     if icon_link is None:
         return None
-    new_icon_link = urllib.parse.urljoin(config.MINIO_URL, icon_link)
+    new_icon_link = urllib.parse.urljoin("http://localhost:9000/", icon_link)
     user: User = await User.get(user_id)
     await user.modify(icon_link=new_icon_link)
     return new_icon_link
@@ -20,5 +20,5 @@ async def save_profile_picture(user_id, file):
 
 async def get_user_profile(user_id: int):
     user: User = await User.get(user_id)
-    user.icon_link = urllib.parse.urljoin(config.MINIO_URL, user.icon_link)
+    user.icon_link = urllib.parse.urljoin("http://localhost:9000/", user.icon_link)
     return user
