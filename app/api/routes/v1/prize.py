@@ -40,9 +40,9 @@ async def edit_prize(prize_edit: PrizeEdit, auth: AuthResponse = Depends(require
                        description=prize_edit.description)
 
 
-@router.delete('/prize')
-async def delete_prize(prize_id: Id, auth: AuthResponse = Depends(require_admin)):
-    prize: Prize = await Prize.get(prize_id.id)
+@router.delete('/prize/{prize_id}')
+async def delete_prize(prize_id: int, auth: AuthResponse = Depends(require_admin)):
+    prize: Prize = await Prize.get(prize_id)
     try:
         await prize.delete()
     except ORMRelationError:
