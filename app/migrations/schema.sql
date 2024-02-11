@@ -137,7 +137,7 @@ CREATE TABLE field (
 	player_id int4 NULL,
 	CONSTRAINT field_boat_id_key UNIQUE (boat_id),
 	CONSTRAINT field_pkey PRIMARY KEY (id),
-	CONSTRAINT unique_field UNIQUE (x, y),
+	CONSTRAINT unique_field UNIQUE (game_id, x, y),
 	CONSTRAINT field_boat_id_fkey FOREIGN KEY (boat_id) REFERENCES boat(id),
 	CONSTRAINT field_game_id_fkey FOREIGN KEY (game_id) REFERENCES game(id),
 	CONSTRAINT field_player_id_fkey FOREIGN KEY (player_id) REFERENCES player(id)
