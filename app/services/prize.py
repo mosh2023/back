@@ -1,5 +1,6 @@
-import urllib.parse
 import uuid
+from urllib.parse import urlparse, urlunparse
+
 
 from app.db.repository import Prize
 from app.minio.base import upload_file_to_s3
@@ -12,7 +13,13 @@ async def save_prize_picture(prize_id, file):
     icon_link = await upload_file_to_s3(file.file, file_name, "prize")
     if icon_link is None:
         return None
-    new_icon_link = urllib.parse.urljoin("http://localhost:9000/", icon_link)
+
+    parsed_url = urlparse(icon_link)
+
+    new_netloc = f"localhost:{config.MINIO_PORT}"
+    new_parsed_url = parsed_url._replace(netloc=new_netloc)
+    new_icon_link = str(urlunparse(new_parsed_url))
+
     prize: Prize = await Prize.get(prize_id)
     await prize.modify(icon_link=new_icon_link)
     return new_icon_link
@@ -20,5 +27,11 @@ async def save_prize_picture(prize_id, file):
 
 async def get_prize_info(prize_id: int):
     prize: Prize = await Prize.get(prize_id)
-    prize.icon_link = urllib.parse.urljoin("http://localhost:9000/", prize.icon_link)
+
+    parsed_url = urlparse(prize.icon_link)
+
+    new_netloc = f"localhost:{config.MINIO_PORT}"
+    new_parsed_url = parsed_url._replace(netloc=new_netloc)
+    prize.icon_link = urlunparse(new_parsed_url)
+
     return prize

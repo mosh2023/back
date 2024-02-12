@@ -61,7 +61,7 @@ class Prize(BaseRepository):
                             'dt_won': self.dt_won})
 
     def __repr__(self) -> str:
-        return f'Field(id={self.id}, name="{self.name}", description=..., ' \
+        return f'Prize(id={self.id}, name="{self.name}", description=..., ' \
             f'icon_link=..., user_id={self.user_id}, admin_id={self.admin_id}, ' \
             f'dt_won={self.dt_won})'
 

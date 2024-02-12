@@ -142,4 +142,3 @@ CREATE TABLE field (
 	CONSTRAINT field_game_id_fkey FOREIGN KEY (game_id) REFERENCES game(id),
 	CONSTRAINT field_player_id_fkey FOREIGN KEY (player_id) REFERENCES player(id)
 );
-

@@ -5,13 +5,12 @@ from app.models.api import Id, BoatInfo, BoatPlace, AuthResponse
 from app.db.repository import Boat, Field
 from app.common.errors.db import ORMUniqueFieldError, ORMRelationError
 
-
 router = APIRouter(
     prefix="/v1", tags=['boat']
 )
 
 
-@router.post('/game/boats')
+@router.post('/game/boat')
 async def create_boat(boat: BoatInfo, auth: AuthResponse = Depends(require_admin)) -> Id:
     boat: Boat = Boat.get_repository(boat)
     try:
@@ -23,15 +22,15 @@ async def create_boat(boat: BoatInfo, auth: AuthResponse = Depends(require_admin
 
 @router.put('/game/boat/place')
 async def place_boat(boat_place: BoatPlace, auth: AuthResponse = Depends(require_admin)):
-    field: Field = Field.get_by_xy(boat_place.game_id, boat_place.x, boat_place.y)
+    field: Field = await Field.get_by_xy(boat_place.game_id, boat_place.x, boat_place.y)
     if field is not None:
         if not field.boat_id:
             await field.set_boat(boat_place.id)
         else:
             raise HTTPException(400, 'There is already a boat in this field.')
     else:
-        field = Field(None, boat_place.game_id, boat_place.x, 
-            boat_place.y, False, None, boat_place.id)
+        field = Field(None, boat_place.game_id, boat_place.x,
+                      boat_place.y, False, None, boat_place.boat_id)
         await field.create()
 
 

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.models.api import GameAPIModel, FieldModel, BoatModel, PrizeModel, AuthResponse
+from app.models.api import GameAPIModel, FieldModel, BoatModel, PrizeModel, AuthResponse, FullFieldModel
 from typing import Optional
 import asyncio
 
@@ -32,43 +32,22 @@ async def get_game(game_id: int) -> Optional[GameAPIModel]:
     return await game.get_api_model()
 
 
-@router.get('/game/fields/{game_id}')
-async def get_injured_fields(game_id: int, auth: AuthResponse = Depends(require_user)) -> list[FieldModel]:
-    '''Get injured Field models.'''
+@router.get('/game/fullfields/{game_id}')
+async def get_user_fullfields(game_id: int, auth: AuthResponse = Depends(require_user)) -> list[FullFieldModel]:
     game: Game = await Game.get(game_id)
-    return [field.get_model() for field in await game.get_injured_fields()]
+    data = await game.get_inj_fullfields()
+
+    return [FullFieldModel(field=field.get_model(), \
+        boat=(boat.get_model() if boat else None), \
+        prize=(prize.get_model() if prize else None)) for field, boat, prize in data]
 
 
-@router.get('/game/fields/admin/{game_id}')
-async def get_admin_fields(game_id: int, auth: AuthResponse = Depends(require_admin)) -> list[FieldModel]:
-    '''Full Field models.'''
+@router.get('/game/fullfields/admin/{game_id}')
+async def get_admin_fullfields(game_id: int, auth: AuthResponse = Depends(require_admin)) -> list[FullFieldModel]:
     game: Game = await Game.get(game_id)
-    return [field.get_model() for field in await game.get_fields()]
+    data = await game.get_fullfields()
 
+    return [FullFieldModel(field=field.get_model(), \
+        boat=(boat.get_model() if boat else None), \
+        prize=(prize.get_model() if prize else None)) for field, boat, prize in data]
 
-@router.get('/game/boats/{game_id}')
-async def get_won_boats(game_id: int, auth: AuthResponse = Depends(require_user)) -> list[BoatModel]:
-    '''Get Boats from hitted Fields.'''
-    game: Game = await Game.get(game_id)
-    return [boat.get_model() for boat in await game.get_won_boats()]
-
-
-@router.get('/game/boats/admin/{game_id}')
-async def get_admin_boats(game_id: int, auth: AuthResponse = Depends(require_admin)) -> list[BoatModel]:
-    '''Full list of the Boats'''
-    game: Game = await Game.get(game_id)
-    return [boat.get_model() for boat in await game.get_boats()]
-
-
-@router.get('/game/prizes/{game_id}')
-async def get_won_prizes(game_id: int, auth: AuthResponse = Depends(require_user)) -> list[PrizeModel]:
-    '''Only Prizes that have already been won.'''
-    game: Game = await Game.get(game_id)
-    return [prize.get_model() for prize in await game.get_won_prizes()]
-
-
-@router.get('/game/prizes/admin/{game_id}')
-async def get_all_prizes(game_id: int, auth: AuthResponse = Depends(require_admin)) -> list[PrizeModel]:
-    '''Full list of the Prizes (won and placed)'''
-    game: Game = await Game.get(game_id)
-    return [prize.get_model() for prize in await game.get_prizes()]

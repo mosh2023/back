@@ -32,4 +32,4 @@ class Boat(BaseRepository):
         return await super().get(id, session=session)
 
     def __repr__(self) -> str:
-        return f'Field(id={self.id}, prize_id={self.prize_id})'
+        return f'Boat(id={self.id}, prize_id={self.prize_id})'

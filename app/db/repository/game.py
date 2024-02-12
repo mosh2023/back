@@ -93,7 +93,6 @@ class Game(BaseRepository):
         self.dt_start = datetime.now()
         await super().create()
 
-    # add checker for board_size field. Тз чекай. Вынеси логику в __метод
     async def modify(self, name: str = None, description: str = None, board_size: int = None):
         if name is not None: self.name = name
         if description is not None: self.description = description
@@ -163,6 +162,41 @@ class Game(BaseRepository):
                 ))
             )
             return (Prize.get_repository(orm, self.session) for orm in prizes)
+        
+    async def get_fullfields(self):
+        async with self.session() as session:
+            stmt = (sa.select(FieldORM, BoatORM, PrizeORM)
+                .join(BoatORM, onclause=sa.and_(FieldORM.boat_id.is_not(None),
+                                                FieldORM.boat_id == BoatORM.id), isouter=True)
+                .join(PrizeORM, onclause=sa.and_(FieldORM.boat_id.is_not(None),
+                                                BoatORM.prize_id == PrizeORM.id), isouter=True)
+                .where(
+                    FieldORM.game_id == self.id
+                ))
+            data = await session.execute(stmt)
+
+            return ((Field.get_repository(field, self.session),
+                     Boat.get_repository(boat, self.session) if boat else None,
+                     Prize.get_repository(prize, self.session) if prize else None
+                     ) for (field, boat, prize) in data)
+        
+    async def get_inj_fullfields(self):
+        async with self.session() as session:
+            stmt = (sa.select(FieldORM, BoatORM, PrizeORM)
+                .join(BoatORM, onclause=sa.and_(FieldORM.boat_id.is_not(None),
+                                                FieldORM.boat_id == BoatORM.id), isouter=True)
+                .join(PrizeORM, onclause=sa.and_(FieldORM.boat_id.is_not(None),
+                                                BoatORM.prize_id == PrizeORM.id), isouter=True)
+                .where(sa.and_(
+                    FieldORM.game_id == self.id,
+                    FieldORM.injured == True
+                )))
+            data = await session.execute(stmt)
+
+            return ((Field.get_repository(field, self.session),
+                     Boat.get_repository(boat, self.session) if boat else None,
+                     Prize.get_repository(prize, self.session) if prize else None
+                     ) for (field, boat, prize) in data)
 
     def __repr__(self) -> str:
         return f'Game(id={self.id}, name="{self.name}", description=..., board_size={self.board_size}, ' \
