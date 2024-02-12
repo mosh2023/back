@@ -9,6 +9,7 @@
 ### PostgreSQL миграции
 
 ### MinIO
+[http://localhost:9000/]
 
 ## Mock
 1. Dependency installation`pip install -r requirements.txt`
