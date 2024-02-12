@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 
 from app.api.dependencies import require_user
 from app.db.repository import User, Player, Game, Field
-from app.models.api import GameKey, Hit, PlayerModel, FullFieldModel
+from app.models.api import GameKey, GameAPIModel, Hit, FullFieldModel
 from app.models.api import Id, AuthResponse
 from app.services.hit import get_player_ready_to_move, create_full_field_model
 
@@ -12,7 +12,7 @@ router = APIRouter(
 
 
 @router.put('/player/join')
-async def join_game(key: GameKey, auth: AuthResponse = Depends(require_user)) -> PlayerModel:
+async def join_game(key: GameKey, auth: AuthResponse = Depends(require_user)) -> GameAPIModel:
     game: Game = await Game.get_by_key(key.key)
     if not game:
         raise HTTPException(404, f'Game with key="{key.key}" does not found.')
@@ -21,8 +21,9 @@ async def join_game(key: GameKey, auth: AuthResponse = Depends(require_user)) ->
 
     if not player:
         raise HTTPException(400,
-                            'You can not join this game. There are 2 players in the game or you have already joined it.')
-    return player.get_model()
+            'You can not join this game. There are 2 players in the game or you have already joined it.')
+    
+    return await (await Game.get(game.id)).get_api_model()
 
 
 @router.put('/player/leave')
