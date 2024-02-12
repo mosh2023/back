@@ -4,11 +4,11 @@
 
 1. Преименовать .env.example в .env
 
-##Prod
+## Prod
 1. Прописать команду `docker-compose up --build -d`
-###PostgreSQL миграции
+### PostgreSQL миграции
 
-###MinIO
+### MinIO
 
 ## Mock
 1. Dependency installation`pip install -r requirements.txt`
