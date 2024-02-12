@@ -100,69 +100,7 @@ class Game(BaseRepository):
         await self._modify({'name': name, 'description': description,
                             'board_size': board_size})
 
-    async def get_fields(self) -> Iterable[Field]:
-        async with self.session() as session:
-            fields = await session.scalars(
-                sa.select(FieldORM)
-                .where(FieldORM.game_id == self.id)
-            )
-            return (Field.get_repository(orm, self.session) for orm in fields)
-        
-    async def get_injured_fields(self) -> Iterable[Field]:
-        async with self.session() as session:
-            fields = await session.scalars(
-                sa.select(FieldORM)
-                .where(sa.and_(
-                    FieldORM.game_id == self.id,
-                    FieldORM.injured == True
-                ))
-            )
-            return (Field.get_repository(orm, self.session) for orm in fields)
 
-    async def get_boats(self) -> Iterable[Boat]:
-        async with self.session() as session:
-            boats = await session.scalars(
-                sa.select(BoatORM)
-                .join(BoatORM.field)
-                .where(FieldORM.game_id == self.id)
-            )
-            return (Boat.get_repository(orm, self.session) for orm in boats)
-        
-    async def get_won_boats(self) -> Iterable[Boat]:
-        async with self.session() as session:
-            boats = await session.scalars(
-                sa.select(BoatORM)
-                .join(BoatORM.field)
-                .where(sa.and_(
-                    FieldORM.game_id == self.id,
-                    FieldORM.injured == True
-                ))
-            )
-            return (Boat.get_repository(orm, self.session) for orm in boats)
-
-    async def get_prizes(self) -> Iterable[Prize]:
-        async with self.session() as session:
-            prizes = await session.scalars(
-                sa.select(PrizeORM)
-                .join(PrizeORM.boat)
-                .join(BoatORM.field)
-                .where(FieldORM.game_id == self.id)
-            )
-            return (Prize.get_repository(orm, self.session) for orm in prizes)
-        
-    async def get_won_prizes(self) -> Iterable[Prize]:
-        async with self.session() as session:
-            prizes = await session.scalars(
-                sa.select(PrizeORM)
-                .join(PrizeORM.boat)
-                .join(BoatORM.field)
-                .where(sa.and_(
-                    FieldORM.game_id == self.id, 
-                    PrizeORM.user_id.is_not(None)
-                ))
-            )
-            return (Prize.get_repository(orm, self.session) for orm in prizes)
-        
     async def get_fullfields(self):
         async with self.session() as session:
             stmt = (sa.select(FieldORM, BoatORM, PrizeORM)

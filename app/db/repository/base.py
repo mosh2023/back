@@ -90,6 +90,9 @@ class BaseRepository(abc.ABC):
 
         await self._update(d)
 
+    def __eq__(self, repo: object) -> bool:
+        return self.get_model() == repo.get_model()
+
     @property
     def session(self) -> AsyncSession:
         return self._session
