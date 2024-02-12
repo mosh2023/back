@@ -1,98 +1,42 @@
 from functools import lru_cache
-from typing import List
-from typing import Optional
-
-from pydantic import BaseSettings
-from starlette.config import Config
-from starlette.datastructures import CommaSeparatedStrings
+from dotenv import load_dotenv
+from os import environ as env
+from pydantic_settings import BaseSettings
+import logging
 
 
-config = Config(".env")
+load_dotenv()
 
 
-class APPSettings(BaseSettings):
-    PROJECT_NAME: str = config("PROJECT_NAME", cast=str, default="TemplateService")
-    VERSION: str = config("VERSION", cast=str, default="1.0.0")
+class AppSettings(BaseSettings):
+    LOG_LEVEL: int = logging.DEBUG
+    DEBUG: bool = False
 
-    DEBUG: bool = config("DEBUG", cast=bool, default=False)
-    ENV: str = config("ENV", cast=str, default="TEST")
+    GAME_KEY_LENGTH: int = 6
+ 
+    POSTGRES_USER: str = env.get('POSTGRES_USER')
+    POSTGRES_PASSWORD: str = env.get('POSTGRES_PASSWORD')
+    POSTGRES_PORT: str = env.get('POSTGRES_PORT')
+    POSTGRES_HOST: str = env.get('POSTGRES_HOST')
+    POSTGRES_DB: str = env.get('POSTGRES_DB')
 
-    DATABASE_URL: str = config(
-        "DATABASE_URL",
-        cast=str,
-        default="postgresql+asyncpg://postgres:DT0546/admin@127.0.0.1:5432/db_name",
-    )
+    POSTGRES_URL: str = f'postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}' \
+        f'@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
 
-    API_ROUTE: str = config("API_ROUTE", cast=str, default="/path")
-    API_ROOT_PATH: str = config("API_ROOT_PATH", default="")
+    MINIO_ACCESS_KEY: str = env.get('MINIO_ACCESS_KEY')
+    MINIO_SECRET_KEY: str = env.get('MINIO_SECRET_KEY')
+    MINIO_HOST: str = env.get('MINIO_HOST')
+    MINIO_PORT: str = env.get('MINIO_PORT', '9000')
+    MINIO_SECURE: bool = env.get('MINIO_SECURE', 'False') == 'True'
 
-    LOGGING_LEVEL: str = config("LOGGING_LEVEL", cast=str, default="INFO")
-    LOGGING_SERIALIZE: bool = config("LOGGING_SERIALIZE", cast=bool, default=False)
-    LOGGING_USING_CONSOLE: bool = config(
-        "LOGGING_USING_CONSOLE", cast=bool, default=True
-    )
-    LOGGING_USING_GRAYLOG: bool = config(
-        "LOGGING_USING_GRAYLOG", cast=bool, default=False
-    )
-    LOGGING_GRAYLOG_UDP_HOST: str = config(
-        "LOGGING_GRAYLOG_UDP_HOST", cast=str, default="devgraylog.medsi.pro"
-    )
-    LOGGING_GRAYLOG_UDP_PORT: int = config(
-        "LOGGING_GRAYLOG_UDP_PORT", cast=int, default=12201
-    )
+    MINIO_URL: str = f'http://{MINIO_HOST}:{MINIO_PORT}/' \
+        if not MINIO_SECURE else f'https://{MINIO_HOST}:{MINIO_PORT}'
 
-    TRACING: bool = config("TRACING", cast=bool, default=True)
-    JAEGER_AGENT: str = config("JAEGER_AGENT", cast=str, default="10.13.6.54")
-    JAEGER_AGENT_PORT: int = config("JAEGER_AGENT_PORT", cast=int, default=2031)
-
-    SOAP_GATEWAY_SERVICE_URL: str = config(
-        "SOAP_GATEWAY_SERVICE", cast=str, default="localhost"
-    )
-
-    HTTP_CLIENT_MAX_ATTEMPTS: int = config(
-        "HTTP_CLIENT_MAX_ATTEMPTS", cast=int, default=3
-    )
-    HTTP_CLIENT_START_TIMEOUT: float = config(
-        "HTTP_CLIENT_START_TIMEOUT", cast=float, default=0.1
-    )
-    HTTP_CLIENT_MAX_TIMEOUT: float = config(
-        "HTTP_CLIENT_MAX_TIMEOUT", cast=float, default=30.0
-    )
-    HTTP_CLIENT_BACKOFF_FACTOR: float = config(
-        "HTTP_CLIENT_BACKOFF_FACTOR", cast=float, default=2.0
-    )
-    HTTP_CLIENT_DNS_MAX_ATTEMPTS: int = config(
-        "HTTP_CLIENT_DNS_MAX_ATTEMPTS", cast=int, default=4
-    )
-    HTTP_CLIENT_DNS_TIMEOUT: float = config(
-        "HTTP_CLIENT_DNS_TIMEOUT", cast=float, default=5.0
-    )
-    HTTP_CLIENT_RAISE_FOR_STATUS: bool = config(
-        "HTTP_CLIENT_RAISE_FOR_STATUS", cast=bool, default=False
-    )
-    HTTP_CLIENT_RETRY_STATUSES: Optional[CommaSeparatedStrings] = config(
-        "HTTP_CLIENT_RETRY_STATUSES", cast=CommaSeparatedStrings, default=None
-    )
-    MIN_CONNECTIONS_COUNT: int = config("MIN_CONNECTIONS_COUNT", cast=int, default=1)
-    MAX_CONNECTIONS_COUNT: int = config("MAX_CONNECTIONS_COUNT", cast=int, default=10)
-
-    KEYCLOAK_AUTH_URL: str = config(
-        "KEYCLOAK_AUTH_URL",
-        cast=str,
-        default="https://predprod-kong-dev.smartmed.pro/kc/auth/",
-    )
-
-    KAFKA_BOOTSTRAP_SERVER: str = config("KAFKA_BOOTSTRAP_SERVER", cast=str, default="")
-
-    SENTRY_DSN: str = config("SENTRY_DSN", cast=str, default="")
-
-    AUTH_ENABLED: bool = config("AUTH_ENABLED", cast=bool, default=False)
-    API_KEY_TOKEN: str = config("API_KEY_TOKEN", cast=str, default="")
-
-    class Config:
-        env_file = ".env"
+    SECRET_KEY: str = env.get('SECRET_KEY')
+    ALGORITHM: str = env.get('ALGORITHM')
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = env.get('ACCESS_TOKEN_EXPIRE_MINUTES')
 
 
 @lru_cache()
-def get_app_settings() -> APPSettings:
-    return APPSettings()
+def get_app_settings() -> AppSettings:
+    return AppSettings()

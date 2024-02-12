@@ -8,7 +8,7 @@ metadata = mapper_registry.metadata
 
 
 @as_declarative(metadata=metadata)
-class Base:
+class DBBase:
     def __iter__(self):
         obj_dict = {
             c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs
@@ -18,6 +18,12 @@ class Base:
 
 def get_metadata():
     """Import all project tables"""
-    from app.db.tables import table  # noqa
+    from .auth import AuthORM
+    from .user import UserORM
+    from .player import PlayerORM
+    from .game import GameORM
+    from .field import FieldORM
+    from .boat import BoatORM
+    from .prize import PrizeORM
 
     return mapper_registry.metadata

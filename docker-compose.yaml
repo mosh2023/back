@@ -1,0 +1,53 @@
+version: '3.3'
+
+services:
+  app:
+    build:
+      context: .
+    container_name: api
+    restart: always
+    command: >
+        sh -c "python cli.py game --manager uvicorn --host 0.0.0.0 --port ${API_PORT} --workers 4"
+    env_file:
+      - .env
+    ports:
+     - "${API_PORT}:${API_PORT}"
+    depends_on:
+      - postgres
+      - minio
+
+  postgres:
+    image: postgres:latest
+    hostname: db
+    container_name: postgres
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - ./dockerfiles/postgresql/data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: on-failure
+
+  minio:
+    image: minio/minio
+    hostname: os
+    container_name: minio
+    env_file:
+      - .env
+    command: server /var/lib/minio/data --console-address ":9001"
+    ports:
+      - "${MINIO_PORT}:9000"
+      - "9001:9001"
+    volumes:
+      - ./dockerfiles/minio/data:/var/lib/minio/data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "${MINIO_CONNECTION}" ] #need refactor minio_connection
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: on-failure

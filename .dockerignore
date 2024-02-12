@@ -5,15 +5,17 @@ env/
 **/.pytest_cache/**
 **/__pycache__/**
 
-.env*
 .gitlab-ci.yml
 .gitignore
 .isort.cfg
 
 Dockerfile
-docker-compose*
+docker-compose.yaml
 
-scripts/**
+game_service/scripts/**
 
 README.md
-nginx.conf
+nginx.conf/tests/
+/.flake8
+/readme.md
+/.env.example

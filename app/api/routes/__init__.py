@@ -1,2 +1,2 @@
-from app.api.routes.root.probs import router as probs_router
-from app.api.routes.v1.service import router as service_router
+from .mock import mock_routers
+from .v1 import v1_routers

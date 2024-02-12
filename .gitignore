@@ -1,9 +1,14 @@
 .vscode/
-.idea/
-venv/
+.idea
+
 **/.pytest_cache/**
 **/__pycache__/**
 **/.hypothesis/**
-
 .env
+venv
+
+req.py
 .coverage
+/service/dockerfiles/
+/dockerfiles/
+qodana.yaml
