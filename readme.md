@@ -5,10 +5,12 @@
 1. Преименовать .env.example в .env
 
 ## Production
+
 1. Прописать команду `docker-compose up --build -d`
 ### PostgreSQL миграции
-1. Прописать команду `cd ./app`
-2. Прописать команду `alembic upgrade head`
+1. Прописать команду `pip install alembic`
+2. Прописать команду `cd ./app`
+3. Прописать команду `alembic upgrade head`
 ### MinIO
 
 К сожалению, я не успел прописать рабочий bash
